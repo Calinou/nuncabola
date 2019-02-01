@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Class-Path: lib/jar/lwjgl.jar lib/jar/jinput.jar lib/jar/jorbis.jar
+Main-Class: com.uppgarn.nuncabola.Nuncabola

@@ -1,0 +1,108 @@
+﻿# Nuncabola authors
+# ======================================================================
+# This is an alphabetically sorted list of all people
+# who have contributed to Nuncabola, either directly,
+# or indirectly through contributions to Neverball.
+#
+# Legend:
+#   N = Name and/or alias
+#   E = E-mail
+#   W = Website
+#   D = Description
+
+N: Ben Anderson
+D: Icons
+
+N: Erik Auerswald
+D: Mouse invert
+
+N: Josh Bush (Cheeseness)
+D: SVG icons
+D: Screenshot naming tweaks
+D: Teleport design
+D: Volcano background
+D: Catseye, Cheese, Melon, Orange, and UFO balls
+
+N: Challenge Space Yard
+E: challengespaceyard@gmail.com
+D: High-score updates
+
+N: Corey Edwards
+D: Joystick select
+
+N: Reshaun Francis
+D: Diagonal ball
+
+N: Kyle Hoker
+D: Feature ideas and testing
+
+N: Eckhard M. Jäger
+D: Eyeball and Blinky textures
+
+N: Byron James Johnson
+D: Platform acceleration toggle
+D: Various fixes
+
+N: Pasi Kallinen
+E: paxed@alt.org
+D: Gradient contributions
+
+N: Robert Kooima
+E: robert.kooima@gmail.com
+D: Developer
+D: Grand Poobah of the Neverball Rabble
+D: Original author/composer/graphics artist
+
+N: Laurent Moussault
+D: Menu navigation improvements
+D: Interface layout improvements
+D: New pause screen
+D: Various bug fixes and features
+
+N: David Olsen
+D: Neverball maps
+D: Textures
+D: Grow/shrink items
+D: Level intro texts
+
+N: Florian Priester
+D: Developer
+D: Mapper
+D: Textures
+D: Hourglass graphic
+
+N: Jean Privat
+D: Developer (inactive)
+D: Various bug fixes and features
+
+N: Jānis Rūcis
+E: parasti@gmail.com
+D: Developer
+D: Neverball maps
+
+N: Matthias Sweertvaegher
+W: http://mattiesworld.gotdns.org
+D: View rotation using second gamepad stick
+D: Configurable fast view rotation bind
+
+N: Paul Tompkins
+D: Neverball maps
+
+N: Uoti Urpala
+D: Bounces with moving objects
+D: Code review, suggestions and comments
+D: Edge intersection handling
+D: Rotating platforms
+
+N: Ian Walker
+D: Mapper
+D: Textures
+D: Neverball Medium set organization
+D: Background music (track6.ogg)
+
+N: Derek Wilson
+D: Thwomp designs
+
+N: Mehdi Yousfi-Monod
+E: mehdi.yousfi@gmail.com
+D: Mapper
