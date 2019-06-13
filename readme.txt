@@ -5,7 +5,7 @@ A project by Florian Priester, based on Robert Kooima's Neverball.
 
 Copyright
 ------------------------------------------------------------------------
-Copyright (c) 2003-2017 Nuncabola authors
+Copyright (c) 2003-2019 Nuncabola authors
 See authors.txt for details.
 
 

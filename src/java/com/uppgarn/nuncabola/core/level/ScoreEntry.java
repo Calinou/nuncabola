@@ -1,7 +1,7 @@
 /*
  * ScoreEntry.java
  *
- * Copyright (c) 2003-2017 Nuncabola authors
+ * Copyright (c) 2003-2019 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
