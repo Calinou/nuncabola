@@ -1,7 +1,7 @@
 /*
  * TerminableThread.java
  *
- * Copyright (c) 1998-2019 Florian Priester
+ * Copyright (c) 1998-2020 Florian Priester
  *
  * CodeLibF is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

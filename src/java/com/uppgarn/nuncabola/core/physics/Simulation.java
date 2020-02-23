@@ -1,7 +1,7 @@
 /*
  * Simulation.java
  *
- * Copyright (c) 2003-2019 Nuncabola authors
+ * Copyright (c) 2003-2020 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -71,6 +71,28 @@ public final class Simulation {
         t = Util.millisecondsToSeconds(path.base.tm - mover.tm);
       }
     }
+    
+    return t;
+  }
+  
+  private float getSwitchesTime(float dt) {
+    float t = dt;
+    
+    for (Switch zwitch: sol.switches) {
+      if ((zwitch.tm < zwitch.base.tm)
+          && (zwitch.tm + getAccumulatorTime(t) > zwitch.base.tm)) {
+        t = Util.millisecondsToSeconds(zwitch.base.tm - zwitch.tm);
+      }
+    }
+    
+    return t;
+  }
+  
+  private float getPathTime(float dt) {
+    float t = dt;
+    
+    t = getMoversTime  (t);
+    t = getSwitchesTime(t);
     
     return t;
   }
@@ -320,7 +342,7 @@ public final class Simulation {
     float tt = dt;
     
     while (tt > 0.0f) {
-      float pt = getMoversTime(tt);
+      float pt = getPathTime(tt);
       
       stepIteration(pt);
       
@@ -356,7 +378,7 @@ public final class Simulation {
     for (int c = 16; (c > 0) && (tt > 0.0f); c--) {
       // Avoid stepping across path changes.
       
-      float pt = getMoversTime(tt);
+      float pt = getPathTime(tt);
       
       // Miss collisions if we reach the iteration limit.
       
