@@ -1,5 +1,5 @@
 /*
- * PlayLookScreen.java
+ * ReplayLookScreen.java
  *
  * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
@@ -29,8 +29,8 @@ import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
 
 import org.lwjgl.input.*;
 
-public final class PlayLookScreen extends Screen {
-  public static final PlayLookScreen INSTANCE = new PlayLookScreen();
+public final class ReplayLookScreen extends Screen {
+  public static final ReplayLookScreen INSTANCE = new ReplayLookScreen();
   
   private Game       oldGame;
   private GameLooker gameLooker;
@@ -38,7 +38,7 @@ public final class PlayLookScreen extends Screen {
   private AxisState xState;
   private AxisState yState;
   
-  private PlayLookScreen() {
+  private ReplayLookScreen() {
   }
   
   @Override
@@ -48,6 +48,10 @@ public final class PlayLookScreen extends Screen {
     
     xState = new AxisState();
     yState = new AxisState();
+    
+    GameFuncs.setFade(0.0f);
+    
+    UI.setMouseGrabbed(true);
     
     Audio.setSoundsPaused(true);
   }
@@ -113,26 +117,24 @@ public final class PlayLookScreen extends Screen {
   
   @Override
   public void windowDeactivated() {
-    PlayPauseScreen.INSTANCE.setNextScreen(PlayMainScreen.INSTANCE);
-    
-    UI.gotoScreen(PlayPauseScreen.INSTANCE);
+    UI.gotoScreen(ReplayPauseScreen.INSTANCE);
   }
   
   @Override
   public void exitRequested() {
     Audio.setSoundsPaused(false);
     
-    UI.gotoScreen(PlayMainScreen.INSTANCE);
+    UI.gotoScreen(ReplayMainScreen.INSTANCE);
   }
   
   @Override
   public void leave(Screen to) {
+    UI.setMouseGrabbed(false);
+    
     GameFuncs.getGame().copyFrom(oldGame);
     
     if (to == null) {
-      PlayFuncs        .deinitialize();
-      LevelSetFuncs    .deinitialize();
-      LevelSetListFuncs.deinitialize();
+      ReplayFuncs.deinitialize();
     }
     
     oldGame    = null;

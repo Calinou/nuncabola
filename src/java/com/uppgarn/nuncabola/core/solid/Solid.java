@@ -1,7 +1,7 @@
 /*
  * Solid.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -21,27 +21,21 @@ public final class Solid {
   public final SolidBase base;
   
   public Path  [] paths;
-  public Body  [] bodies;
+  public Mover [] movers;
   public Switch[] switches;
   public Item  [] items;
   public Ball  [] balls;
-  
-  public Mover[] movers;
   
   public float accum;
   
   public Solid(SolidBase base) {
     this.base = base;
     
-    MoverCreator moverCreator = new MoverCreator();
-    
     paths    = createPaths();
-    bodies   = createBodies(moverCreator);
+    movers   = createMovers();
     switches = createSwitches();
     items    = createItems();
     balls    = createBalls();
-    
-    movers = moverCreator.create();
     
     accum = 0.0f;
   }
@@ -50,12 +44,10 @@ public final class Solid {
     base = src.base;
     
     paths    = createPaths   (src);
-    bodies   = createBodies  (src);
+    movers   = createMovers  (src);
     switches = createSwitches(src);
     items    = createItems   (src);
     balls    = createBalls   (src);
-    
-    movers = createMovers(src);
     
     accum = src.accum;
   }
@@ -70,14 +62,14 @@ public final class Solid {
     return paths;
   }
   
-  private Body[] createBodies(MoverCreator moverCreator) {
-    Body[] bodies = new Body[base.bodyBases.length];
+  private Mover[] createMovers() {
+    Mover[] movers = new Mover[base.moverBases.length];
     
-    for (int idx = 0; idx < bodies.length; idx++) {
-      bodies[idx] = new Body(base.bodyBases[idx], moverCreator);
+    for (int idx = 0; idx < movers.length; idx++) {
+      movers[idx] = new Mover(base.moverBases[idx]);
     }
     
-    return bodies;
+    return movers;
   }
   
   private Switch[] createSwitches() {
@@ -120,14 +112,14 @@ public final class Solid {
     return paths;
   }
   
-  private Body[] createBodies(Solid src) {
-    Body[] bodies = new Body[src.bodies.length];
+  private Mover[] createMovers(Solid src) {
+    Mover[] movers = new Mover[src.movers.length];
     
-    for (int idx = 0; idx < bodies.length; idx++) {
-      bodies[idx] = new Body(src.bodies[idx]);
+    for (int idx = 0; idx < movers.length; idx++) {
+      movers[idx] = new Mover(src.movers[idx]);
     }
     
-    return bodies;
+    return movers;
   }
   
   private Switch[] createSwitches(Solid src) {
@@ -160,16 +152,6 @@ public final class Solid {
     return balls;
   }
   
-  private Mover[] createMovers(Solid src) {
-    Mover[] movers = new Mover[src.movers.length];
-    
-    for (int idx = 0; idx < movers.length; idx++) {
-      movers[idx] = new Mover(src.movers[idx]);
-    }
-    
-    return movers;
-  }
-  
   public void copyFrom(Solid src) {
     assert src.base == base;
     
@@ -179,10 +161,10 @@ public final class Solid {
       paths[idx].copyFrom(src.paths[idx]);
     }
     
-    // Bodies.
+    // Movers.
     
-    for (int idx = 0; idx < bodies.length; idx++) {
-      bodies[idx].copyFrom(src.bodies[idx]);
+    for (int idx = 0; idx < movers.length; idx++) {
+      movers[idx].copyFrom(src.movers[idx]);
     }
     
     // Switches.
@@ -211,12 +193,6 @@ public final class Solid {
       balls = createBalls(src);
     }
     
-    // Movers.
-    
-    for (int idx = 0; idx < movers.length; idx++) {
-      movers[idx].copyFrom(src.movers[idx]);
-    }
-    
     accum = src.accum;
   }
   
@@ -230,10 +206,10 @@ public final class Solid {
       paths[idx].copyFrom(src1.paths[idx]);
     }
     
-    // Bodies.
+    // Movers.
     
-    for (int idx = 0; idx < bodies.length; idx++) {
-      bodies[idx].copyFrom(src1.bodies[idx]);
+    for (int idx = 0; idx < movers.length; idx++) {
+      movers[idx].copyFrom(src0.movers[idx], src1.movers[idx], alpha);
     }
     
     // Switches.
@@ -261,12 +237,6 @@ public final class Solid {
       }
     } else {
       balls = createBalls(src1);
-    }
-    
-    // Movers.
-    
-    for (int idx = 0; idx < movers.length; idx++) {
-      movers[idx].copyFrom(src0.movers[idx], src1.movers[idx], alpha);
     }
     
     accum = src1.accum;

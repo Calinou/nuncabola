@@ -1,7 +1,7 @@
 /*
  * Series.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -35,15 +35,17 @@ public abstract class Series {
   private int    totalCoins;
   
   private Instant date;
-  private Level   level;
-  private int     levelTime;
-  private int     levelGoal;
-  private Status  status;
-  private int     time;
-  private int     coins;
-  private int     newBalls;
-  private int     newTotalTime;
-  private int     newTotalCoins;
+  private String  levelPath;
+  
+  private LevelOverride levelOverride;
+  private Status        status;
+  private int           time;
+  private int           gainedTime;
+  private int           coins;
+  
+  private int newBalls;
+  private int newTotalTime;
+  private int newTotalCoins;
   
   protected Series(
       SeriesMode mode,
@@ -60,13 +62,15 @@ public abstract class Series {
     this.totalTime  = totalTime;
     this.totalCoins = totalCoins;
     
-    date          = Instant.EPOCH;
-    level         = new Level();
-    levelTime     = level.getTime();
-    levelGoal     = level.getGoal();
+    date      = Instant.EPOCH;
+    levelPath = "";
+    
+    levelOverride = new LevelOverride(new Level());
     status        = Status.NONE;
     time          = 0;
+    gainedTime    = 0;
     coins         = 0;
+    
     newBalls      = balls;
     newTotalTime  = totalTime;
     newTotalCoins = totalCoins;
@@ -106,22 +110,46 @@ public abstract class Series {
     return date;
   }
   
+  public final String getLevelPath() {
+    assert !stopped;
+    
+    return levelPath;
+  }
+  
   public final Level getLevel() {
     assert !stopped;
     
-    return level;
+    return levelOverride.getLevel();
+  }
+  
+  public final int getLevelMajorVersion() {
+    assert !stopped;
+    
+    return levelOverride.getMajorVersion();
+  }
+  
+  public final int getLevelMinorVersion() {
+    assert !stopped;
+    
+    return levelOverride.getMinorVersion();
+  }
+  
+  public final String getLevelShotPath() {
+    assert !stopped;
+    
+    return levelOverride.getShotPath();
   }
   
   public final int getLevelTime() {
     assert !stopped;
     
-    return levelTime;
+    return levelOverride.getTime();
   }
   
   public final int getLevelGoal() {
     assert !stopped;
     
-    return levelGoal;
+    return levelOverride.getGoal();
   }
   
   public final Status getStatus() {
@@ -136,10 +164,17 @@ public abstract class Series {
     return time;
   }
   
+  public final int getGainedTime() {
+    assert !stopped;
+    
+    return gainedTime;
+  }
+  
   public final int getTimer() {
     assert !stopped;
     
-    return (levelTime == 0) ? time : levelTime - time;
+    return (levelOverride.getTime() == 0)
+           ? time : levelOverride.getTime() + gainedTime - time;
   }
   
   public final int getCoins() {
@@ -151,7 +186,7 @@ public abstract class Series {
   public final int getGoal() {
     assert !stopped;
     
-    return Math.max(levelGoal - coins, 0);
+    return Math.max(levelOverride.getGoal() - coins, 0);
   }
   
   public final int getNewBalls() {
@@ -185,9 +220,11 @@ public abstract class Series {
       return;
     }
     
-    status = game.status;
-    time   = (levelTime == 0) ? game.timer : levelTime - game.timer;
-    coins  = game.coins;
+    levelOverride = new LevelOverride(game.levelOverride);
+    status        = game.status;
+    time          = game.time;
+    gainedTime    = game.gainedTime;
+    coins         = game.coins;
     
     switch (status) {
       case NONE: {
@@ -228,9 +265,7 @@ public abstract class Series {
   protected final void play(
       boolean applyResult,
       Instant date,
-      Level   level,
-      int     levelTime,
-      int     levelGoal) {
+      String  levelPath) {
     assert !stopped;
     
     if (applyResult) {
@@ -238,15 +273,17 @@ public abstract class Series {
     }
     
     this.date      = date;
-    this.level     = level;
-    this.levelTime = levelTime;
-    this.levelGoal = levelGoal;
-    status         = Status.NONE;
-    time           = 0;
-    coins          = 0;
-    newBalls       = balls;
-    newTotalTime   = totalTime;
-    newTotalCoins  = totalCoins;
+    this.levelPath = levelPath;
+    
+    levelOverride = new LevelOverride(new Level());
+    status        = Status.NONE;
+    time          = 0;
+    gainedTime    = 0;
+    coins         = 0;
+    
+    newBalls      = balls;
+    newTotalTime  = totalTime;
+    newTotalCoins = totalCoins;
   }
   
   protected final void stop(boolean applyResult) {

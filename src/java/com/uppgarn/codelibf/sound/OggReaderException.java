@@ -1,7 +1,7 @@
 /*
- * OggStreamException.java
+ * OggReaderException.java
  *
- * Copyright (c) 1998-2020 Florian Priester
+ * Copyright (c) 1998-2022 Florian Priester
  *
  * CodeLibF is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,11 +16,11 @@
 
 package com.uppgarn.codelibf.sound;
 
-public final class OggStreamException extends Exception {
-  public OggStreamException() {
+public final class OggReaderException extends Exception {
+  public OggReaderException() {
   }
   
-  public OggStreamException(Throwable cause) {
+  public OggReaderException(Throwable cause) {
     super(cause);
   }
 }

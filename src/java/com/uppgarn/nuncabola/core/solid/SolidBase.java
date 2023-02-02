@@ -1,7 +1,7 @@
 /*
  * SolidBase.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -31,13 +31,14 @@ public final class SolidBase {
   public Geom      [] geoms;
   public Lump      [] lumps;
   public Node      [] nodes;
+  public Body      [] bodies;
   public Goal      [] goals;
   public Teleporter[] teles;
   public Billboard [] bills;
   public Vista     [] vistas;
   
   public PathBase  [] pathBases;
-  public BodyBase  [] bodyBases;
+  public MoverBase [] moverBases;
   public SwitchBase[] switchBases;
   public ItemBase  [] itemBases;
   public BallBase  [] ballBases;
@@ -56,13 +57,14 @@ public final class SolidBase {
     geoms   = new Geom      [0];
     lumps   = new Lump      [0];
     nodes   = new Node      [0];
+    bodies  = new Body      [0];
     goals   = new Goal      [0];
     teles   = new Teleporter[0];
     bills   = new Billboard [0];
     vistas  = new Vista     [0];
     
     pathBases   = new PathBase  [0];
-    bodyBases   = new BodyBase  [0];
+    moverBases  = new MoverBase [0];
     switchBases = new SwitchBase[0];
     itemBases   = new ItemBase  [0];
     ballBases   = new BallBase  [0];

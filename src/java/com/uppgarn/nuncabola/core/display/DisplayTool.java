@@ -1,7 +1,7 @@
 /*
  * DisplayTool.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -23,6 +23,17 @@ import org.lwjgl.opengl.*;
 import java.util.*;
 
 public final class DisplayTool {
+  private static final int MIN_WIDTH  = 256;
+  private static final int MIN_HEIGHT = 256;
+  
+  private static DisplayMode[] getAvailableModes() {
+    try {
+      return Display.getAvailableDisplayModes();
+    } catch (LWJGLException ex) {
+      return new DisplayMode[0];
+    }
+  }
+  
   private static boolean isModeBetter(
       DisplayMode mode1,
       DisplayMode mode2,
@@ -65,14 +76,6 @@ public final class DisplayTool {
     return freq1 >= freq2;
   }
   
-  private static DisplayMode[] getAvailableModes() {
-    try {
-      return Display.getAvailableDisplayModes();
-    } catch (LWJGLException ex) {
-      return new DisplayMode[0];
-    }
-  }
-  
   public static Set<DisplayMode> getModes() {
     Set<DisplayMode> modes = new HashSet<>();
     
@@ -83,31 +86,33 @@ public final class DisplayTool {
     // for each resolution.
     
     for (DisplayMode mode: availModes) {
-      boolean add = true;
-      
-      for (Iterator<DisplayMode> it = modes.iterator(); it.hasNext();) {
-        DisplayMode oldMode = it.next();
+      if ((mode.getWidth() >= MIN_WIDTH) && (mode.getHeight() >= MIN_HEIGHT)) {
+        boolean add = true;
         
-        if    ((oldMode.getWidth () == mode.getWidth ())
-            && (oldMode.getHeight() == mode.getHeight())) {
-          // Choose between two modes with the same resolution.
+        for (Iterator<DisplayMode> it = modes.iterator(); it.hasNext();) {
+          DisplayMode oldMode = it.next();
           
-          if (isModeBetter(oldMode, mode, deskMode)) {
-            // Keep old mode.
+          if    ((oldMode.getWidth () == mode.getWidth ())
+              && (oldMode.getHeight() == mode.getHeight())) {
+            // Choose between two modes with the same resolution.
             
-            add = false;
-          } else {
-            // Remove old mode, add new one.
+            if (isModeBetter(oldMode, mode, deskMode)) {
+              // Keep old mode.
+              
+              add = false;
+            } else {
+              // Remove old mode, add new one.
+              
+              it.remove();
+            }
             
-            it.remove();
+            break;
           }
-          
-          break;
         }
-      }
-      
-      if (add) {
-        modes.add(mode);
+        
+        if (add) {
+          modes.add(mode);
+        }
       }
     }
     
@@ -141,8 +146,8 @@ public final class DisplayTool {
     
     Set<DisplayMode> modes = getModes();
     
-    if ((width <= 0) || (height <= 0)) {
-      // No width and/or height given, select default size.
+    if ((width < MIN_WIDTH) || (height < MIN_HEIGHT)) {
+      // No valid width and/or height given, select default size.
       
       DisplayMode deskMode = Display.getDesktopDisplayMode();
       

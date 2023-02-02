@@ -1,7 +1,7 @@
 /*
  * LevelSet.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -20,12 +20,13 @@ package com.uppgarn.nuncabola.core.level;
 import java.util.*;
 
 public final class LevelSet {
-  public static final int MAX_TIME        = 359999;
-  public static final int MAX_LEVEL_COUNT = 25;
-  
   public static final List<ScoreType> SCORE_TYPES =
     Collections.unmodifiableList(
       Arrays.asList(ScoreType.MOST_COINS, ScoreType.BEST_TIME));
+  
+  public static final int DEFAULT_SCORE_TIME = 359999;
+  
+  public static final int MAX_LEVEL_COUNT = 25;
   
   private String id;
   private String name;
@@ -42,7 +43,7 @@ public final class LevelSet {
     desc     = "";
     shotPath = "";
     
-    defaultScoreTables = new ScoreTables(SCORE_TYPES, MAX_TIME);
+    defaultScoreTables = new ScoreTables(SCORE_TYPES, DEFAULT_SCORE_TIME);
     
     levelPaths = Collections.emptyList();
   }

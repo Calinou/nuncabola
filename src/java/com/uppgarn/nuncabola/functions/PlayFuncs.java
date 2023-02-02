@@ -1,7 +1,7 @@
 /*
  * PlayFuncs.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -30,11 +30,11 @@ public final class PlayFuncs {
   private static PlaySeries series;
   
   private static Game           currGame;
-  private static Game           prevGame;
   private static ReplayRecorder replayRecorder;
   private static Input          input;
   private static PlayGameServer gameServer;
   private static GameClient     gameClient;
+  private static Game           prevGame;
   private static float          accum;
   
   public static void initialize(
@@ -70,16 +70,19 @@ public final class PlayFuncs {
   }
   
   private static void initializeGameFuncs() throws FuncsException {
-    GameFuncs.load(series.getLevel().getSolidPath());
+    GameFuncs.load(series.getLevelPath());
     
     reset();
   }
   
   private static void reset() {
-    // Games.
+    // Current game.
     
     currGame = new Game(GameFuncs.getGameBase());
-    prevGame = new Game(GameFuncs.getGameBase());
+    
+    GameFuncs.getGame().copyFrom(currGame);
+    
+    series.update(GameFuncs.getGame());
     
     // Replay recorder.
     
@@ -106,7 +109,6 @@ public final class PlayFuncs {
     
     gameClient = new GameClient(
       currGame,
-      GameFuncs.getViewDistance(),
       new GameClientListener() {
         @Override
         public void soundRequested(String path, float amp) {
@@ -114,17 +116,21 @@ public final class PlayFuncs {
         }
       });
     
-    // Accumulator.
-    
-    accum = 0.0f;
-    
     // Process first update.
     
     processCommands();
     
-    prevGame.copyFrom(currGame);
+    GameFuncs.getGame().copyFrom(currGame);
     
-    updateGame();
+    series.update(GameFuncs.getGame());
+    
+    // Previous game.
+    
+    prevGame = new Game(currGame);
+    
+    // Accumulator.
+    
+    accum = 0.0f;
   }
   
   private static void processCommands() {
@@ -132,14 +138,6 @@ public final class PlayFuncs {
       gameClient    .execute(cmd);
       replayRecorder.record (cmd);
     }
-  }
-  
-  private static void updateGame() {
-    float alpha = accum / gameServer.getRate().getTime();
-    
-    GameFuncs.getGame().copyFrom(prevGame, currGame, alpha);
-    
-    series.update(GameFuncs.getGame());
   }
   
   public static PlaySeries getSeries() {
@@ -163,7 +161,11 @@ public final class PlayFuncs {
       processCommands();
     }
     
-    updateGame();
+    float alpha = accum / gameServer.getRate().getTime();
+    
+    GameFuncs.getGame().copyFrom(prevGame, currGame, alpha);
+    
+    series.update(GameFuncs.getGame());
   }
   
   public static void stopRecording() {
@@ -234,11 +236,11 @@ public final class PlayFuncs {
     
     series         = null;
     currGame       = null;
-    prevGame       = null;
     replayRecorder = null;
     input          = null;
     gameServer     = null;
     gameClient     = null;
+    prevGame       = null;
   }
   
   private PlayFuncs() {

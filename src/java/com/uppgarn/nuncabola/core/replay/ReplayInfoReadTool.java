@@ -1,7 +1,7 @@
 /*
  * ReplayInfoReadTool.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -83,8 +83,8 @@ public final class ReplayInfoReadTool {
     } catch (DateTimeException ex) {
     }
     
-    info.setShotPath (readString(in));
-    info.setLevelPath(readString(in));
+    info.setLevelShotPath(readString(in));
+    info.setLevelPath    (readString(in));
     
     info.setLevelTime(readInt(in));
     info.setLevelGoal(readInt(in));

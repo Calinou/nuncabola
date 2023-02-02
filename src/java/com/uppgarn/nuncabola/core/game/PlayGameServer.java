@@ -1,7 +1,7 @@
 /*
  * PlayGameServer.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@ public final class PlayGameServer extends GameServer {
   private static final String SOUND_ITEM        = "snd/coin.ogg";
   private static final String SOUND_GROW        = "snd/grow.ogg";
   private static final String SOUND_SHRINK      = "snd/shrink.ogg";
+  private static final String SOUND_CLOCK       = "snd/clock.ogg";
   private static final String SOUND_SWITCH      = "snd/switch.ogg";
   private static final String SOUND_TELEPORTER  = "snd/jump.ogg";
   private static final String SOUND_UNLOCK      = "snd/switch.ogg";
@@ -547,10 +548,10 @@ public final class PlayGameServer extends GameServer {
       return;
     }
     
-    if (levelTime > 0) {
-      timer = Math.max(timer - rate.getTime(), 0.0f);
-    } else {
+    if (levelTime == 0) {
       timer += rate.getTime();
+    } else {
+      timer = Math.max(timer - rate.getTime(), 0.0f);
     }
     
     sendTimerCommand();
@@ -599,6 +600,18 @@ public final class PlayGameServer extends GameServer {
     handleResizeItem(ballSize.getNextSmaller(), SOUND_SHRINK);
   }
   
+  private void handleClockItem(int value) {
+    if ((levelTime == 0) || (value <= 0)) {
+      return;
+    }
+    
+    sendSoundCommand(SOUND_CLOCK, 1.0f);
+    
+    timer += value;
+    
+    sendTimerCommand();
+  }
+  
   private void handleItem(int itemIdx, Item item) {
     sendItemCollectCommand(itemIdx);
     
@@ -615,6 +628,11 @@ public final class PlayGameServer extends GameServer {
       }
       case ItemBase.SHRINK: {
         handleShrinkItem();
+        
+        break;
+      }
+      case ItemBase.CLOCK: {
+        handleClockItem(item.value);
         
         break;
       }
@@ -775,17 +793,15 @@ public final class PlayGameServer extends GameServer {
   }
   
   private void testGoal() {
-    if (status.isOver()) {
+    if (status.isOver() || !goalsUnlocked) {
       return;
     }
     
-    if (goalsUnlocked) {
-      for (Goal goal: sol.base.goals) {
-        if (entDetect.testGoal(goal, ball)) {
-          handleStatus(Status.GOAL, SOUND_GOAL);
-          
-          break;
-        }
+    for (Goal goal: sol.base.goals) {
+      if (entDetect.testGoal(goal, ball)) {
+        handleStatus(Status.GOAL, SOUND_GOAL);
+        
+        break;
       }
     }
   }
@@ -801,11 +817,11 @@ public final class PlayGameServer extends GameServer {
   }
   
   private void testTimeOut() {
-    if (status.isOver()) {
+    if (status.isOver() || (levelTime == 0)) {
       return;
     }
     
-    if ((levelTime > 0) && (timer <= 0.0f)) {
+    if (timer <= 0.0f) {
       handleStatus(Status.TIME_OUT, SOUND_TIME_OUT);
     }
   }

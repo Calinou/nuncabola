@@ -1,7 +1,7 @@
 /*
  * LevelScore.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@ public final class LevelScore {
   public LevelScore(Level level, boolean first) {
     if (level == null) {
       version = 0;
-      tables  = new ScoreTables(Level.SCORE_TYPES, Level.MAX_TIME);
+      tables  = new ScoreTables(Level.SCORE_TYPES, Level.DEFAULT_SCORE_TIME);
     } else {
       version = level.getMajorVersion();
       tables  = new ScoreTables(level.getDefaultScoreTables());

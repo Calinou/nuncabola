@@ -1,4 +1,4 @@
-﻿# Nuncabola authors
+# Nuncabola authors
 # ======================================================================
 # This is an alphabetically sorted list of all people
 # who have contributed to Nuncabola, either directly,
@@ -22,10 +22,6 @@ D: Screenshot naming tweaks
 D: Teleport design
 D: Volcano background
 D: Catseye, Cheese, Melon, Orange, and UFO balls
-
-N: Challenge Space Yard
-E: challengespaceyard@gmail.com
-D: High-score updates
 
 N: Corey Edwards
 D: Joystick select
@@ -79,6 +75,11 @@ N: Jānis Rūcis
 E: parasti@gmail.com
 D: Developer
 D: Neverball maps
+
+N: Paul Ruediger (Challenge Space Yard)
+E: challengespaceyard@gmail.com
+D: Collectible clocks
+D: High-score updates
 
 N: Matthias Sweertvaegher
 W: http://mattiesworld.gotdns.org

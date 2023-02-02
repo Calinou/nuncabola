@@ -1,7 +1,7 @@
 /*
  * Mover.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -20,6 +20,8 @@ package com.uppgarn.nuncabola.core.solid;
 import com.uppgarn.nuncabola.core.util.*;
 
 public final class Mover {
+  public final MoverBase base;
+  
   /**
    * Index of path.
    */
@@ -35,14 +37,18 @@ public final class Mover {
    */
   public int tm;
   
-  public Mover() {
-    pathIdx = -1;
+  public Mover(MoverBase base) {
+    this.base = base;
+    
+    pathIdx = base.pathIdx;
     
     t  = 0.0f;
     tm = 0;
   }
   
   public Mover(Mover src) {
+    base = src.base;
+    
     pathIdx = src.pathIdx;
     
     t  = src.t;
@@ -50,6 +56,8 @@ public final class Mover {
   }
   
   public void copyFrom(Mover src) {
+    assert src.base == base;
+    
     pathIdx = src.pathIdx;
     
     t  = src.t;
@@ -57,6 +65,9 @@ public final class Mover {
   }
   
   public void copyFrom(Mover src0, Mover src1, float alpha) {
+    assert src0.base == base;
+    assert src1.base == base;
+    
     if (src0.pathIdx == src1.pathIdx) {
       t = Util.lerp(src0.t, src1.t, alpha);
     } else {

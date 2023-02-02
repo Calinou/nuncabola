@@ -1,7 +1,7 @@
 /*
  * AudioStream.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -22,48 +22,69 @@ import static com.uppgarn.nuncabola.core.audio.AudioConstants.*;
 import com.uppgarn.codelibf.io.*;
 import com.uppgarn.codelibf.sound.*;
 
+import java.io.*;
+
 final class AudioStream {
   private final Source  src;
   private final boolean loop;
   
-  private OggStream in;
+  private OggReader in;
   private boolean   mono;
   
   public AudioStream(Source src, boolean loop) {
     this.src  = src;
     this.loop = loop;
     
-    openStream();
+    openReader();
     
     mono = (in == null) || (in.getChannels() == 1);
   }
   
-  private void openStream() {
+  private void openReader() {
     try {
-      in = new OggStream(src);
+      InputStream inStream = src.newInputStream();
       
-      int channels   = in.getChannels();
-      int sampleRate = in.getSampleRate();
-      
-      if (!((channels == 1) || (channels == 2))
-          || (sampleRate != SAMPLE_RATE)) {
-        // Unsupported format.
+      try {
+        in = new OggReader(inStream);
         
-        in.close();
+        int channels   = in.getChannels();
+        int sampleRate = in.getSampleRate();
+        
+        if (!((channels == 1) || (channels == 2))
+            || (sampleRate != SAMPLE_RATE)) {
+          // Unsupported format.
+          
+          try {
+            in.close();
+          } catch (OggReaderException ex) {
+          }
+          
+          in = null;
+        }
+      } catch (OggReaderException ex) {
+        try {
+          inStream.close();
+        } catch (IOException ex0) {
+        }
         
         in = null;
       }
-    } catch (OggStreamException ex) {
+    } catch (SourceException ex) {
       in = null;
     }
   }
   
-  private void closeStream() {
-    if (in != null) {
-      in.close();
-      
-      in = null;
+  private void closeReader() {
+    if (in == null) {
+      return;
     }
+    
+    try {
+      in.close();
+    } catch (OggReaderException ex) {
+    }
+    
+    in = null;
   }
   
   public boolean isMono() {
@@ -84,16 +105,16 @@ final class AudioStream {
           
           lastEOF = false;
         } else {
-          closeStream();
+          closeReader();
           
           if (loop && !lastEOF) {
-            openStream();
+            openReader();
             
             lastEOF = true;
           }
         }
-      } catch (OggStreamException ex) {
-        closeStream();
+      } catch (OggReaderException ex) {
+        closeReader();
       }
     }
     
@@ -101,6 +122,6 @@ final class AudioStream {
   }
   
   public void close() {
-    closeStream();
+    closeReader();
   }
 }

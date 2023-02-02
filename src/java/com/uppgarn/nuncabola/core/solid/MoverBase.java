@@ -1,7 +1,7 @@
 /*
- * MoverCreator.java
+ * MoverBase.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -17,25 +17,13 @@
 
 package com.uppgarn.nuncabola.core.solid;
 
-import java.util.*;
-
-public final class MoverCreator {
-  private List<Mover> movers;
+public final class MoverBase {
+  /**
+   * Index of path.
+   */
+  public int pathIdx;
   
-  public MoverCreator() {
-    movers = new ArrayList<>();
-  }
-  
-  public int add(int pathIdx) {
-    Mover mover = new Mover();
-    mover.pathIdx = pathIdx;
-    
-    movers.add(mover);
-    
-    return movers.size() - 1;
-  }
-  
-  public Mover[] create() {
-    return movers.toArray(new Mover[movers.size()]);
+  public MoverBase() {
+    pathIdx = -1;
   }
 }

@@ -5,7 +5,7 @@ A project by Florian Priester, based on Robert Kooima's Neverball.
 
 Copyright
 ------------------------------------------------------------------------
-Copyright (c) 2003-2020 Nuncabola authors
+Copyright (c) 2003-2022 Nuncabola authors
 See authors.txt for details.
 
 
@@ -27,8 +27,8 @@ GNU General Public License for more details.
 
 System requirements
 ------------------------------------------------------------------------
-* Windows, Linux or Mac OS X
-* Java Runtime Environment (JRE) 8 or higher
+* Windows, Linux or macOS
+* Java (JDK or JRE) 8 or higher
 
 
 Libraries used by this program
@@ -36,7 +36,7 @@ Libraries used by this program
 * LWJGL, the Lightweight Java Game Library
   https://www.lwjgl.org/
 * JInput
-  https://java.net/projects/jinput
+  https://jinput.github.io/jinput/
 * JOrbis
   http://www.jcraft.com/jorbis/
 * CodeLibF

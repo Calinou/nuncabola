@@ -1,7 +1,7 @@
 /*
  * LevelSetReadTool.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -38,17 +38,17 @@ public final class LevelSetReadTool {
     
     for (ScoreType type: SCORE_TYPES) {
       for (int rank = 0; rank < ScoreTable.SIZE; rank++) {
-        int time  = LevelSet.MAX_TIME;
+        int time  = LevelSet.DEFAULT_SCORE_TIME;
         int coins = 0;
         
         if (partIdx < parts.length) {
           try {
-            int value = Integer.parseInt(parts[partIdx]);
+            int value = Math.max(Integer.parseInt(parts[partIdx]), 0);
             
             if (type.isTimeBased()) {
-              time  = Math.min(Math.max(value, 0), time);
+              time  = value;
             } else {
-              coins = Math.max(value, coins);
+              coins = value;
             }
           } catch (NumberFormatException ex) {
           }

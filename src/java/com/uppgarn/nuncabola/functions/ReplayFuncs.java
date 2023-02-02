@@ -1,7 +1,7 @@
 /*
  * ReplayFuncs.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -35,9 +35,9 @@ public final class ReplayFuncs {
   private static ReplaySeries series;
   
   private static Game             currGame;
-  private static Game             prevGame;
   private static ReplayGameServer gameServer;
   private static GameClient       gameClient;
+  private static Game             prevGame;
   private static float            accum;
   private static Speed            speed;
   
@@ -76,30 +76,40 @@ public final class ReplayFuncs {
       throw new FuncsException();
     }
     
+    // Series.
+    
+    series = new ReplaySeries(info);
+    
     // Initialize game functions.
     
     try {
-      GameFuncs.load(info.getLevelPath());
+      initializeGameFuncs();
     } catch (FuncsException ex) {
       ReplayFuncs.src  = null;
       ReplayFuncs.file = null;
-      ReplayFuncs.info = null;
+      info             = null;
+      series           = null;
       
       throw ex;
     }
-    
-    // Series.
-    
-    series = new ReplaySeries(info, GameFuncs.getLevel());
+  }
+  
+  private static void initializeGameFuncs() throws FuncsException {
+    GameFuncs.load(series.getLevelPath());
     
     reset();
   }
   
   private static void reset() {
-    // Games.
+    // Current game.
     
     currGame = new Game(GameFuncs.getGameBase());
-    prevGame = new Game(GameFuncs.getGameBase());
+    
+    ReplayLevelOverrider.override(currGame.levelOverride, info);
+    
+    GameFuncs.getGame().copyFrom(currGame);
+    
+    series.update(GameFuncs.getGame());
     
     // Game server.
     
@@ -109,7 +119,6 @@ public final class ReplayFuncs {
     
     gameClient = new GameClient(
       currGame,
-      GameFuncs.getViewDistance(),
       new GameClientListener() {
         @Override
         public void soundRequested(String path, float amp) {
@@ -119,6 +128,18 @@ public final class ReplayFuncs {
         }
       });
     
+    // Process first update.
+    
+    processCommands();
+    
+    GameFuncs.getGame().copyFrom(currGame);
+    
+    series.update(GameFuncs.getGame());
+    
+    // Previous game.
+    
+    prevGame = new Game(currGame);
+    
     // Accumulator.
     
     accum = 0.0f;
@@ -126,28 +147,12 @@ public final class ReplayFuncs {
     // Speed.
     
     speed = Speed.NORMAL;
-    
-    // Process first update.
-    
-    processCommands();
-    
-    prevGame.copyFrom(currGame);
-    
-    updateGame();
   }
   
   private static void processCommands() {
     for (Command cmd: gameServer.getCommands()) {
       gameClient.execute(cmd);
     }
-  }
-  
-  private static void updateGame() {
-    float alpha = accum / gameServer.getRate().getTime();
-    
-    GameFuncs.getGame().copyFrom(prevGame, currGame, alpha);
-    
-    series.update(GameFuncs.getGame());
   }
   
   public static Path getFile() {
@@ -183,7 +188,11 @@ public final class ReplayFuncs {
       processCommands();
     }
     
-    updateGame();
+    float alpha = accum / gameServer.getRate().getTime();
+    
+    GameFuncs.getGame().copyFrom(prevGame, currGame, alpha);
+    
+    series.update(GameFuncs.getGame());
   }
   
   public static void repeat() {
@@ -202,9 +211,9 @@ public final class ReplayFuncs {
     info       = null;
     series     = null;
     currGame   = null;
-    prevGame   = null;
     gameServer = null;
     gameClient = null;
+    prevGame   = null;
   }
   
   private ReplayFuncs() {

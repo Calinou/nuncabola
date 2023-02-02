@@ -1,7 +1,7 @@
 /*
  * ReplayInfo.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@ public final class ReplayInfo {
   
   private Instant date;
   private String  levelPath;
-  private String  shotPath;
+  private String  levelShotPath;
   private int     levelTime;
   private int     levelGoal;
   private Status  status;
@@ -47,14 +47,14 @@ public final class ReplayInfo {
     totalTime  = 0;
     totalCoins = 0;
     
-    date      = Instant.EPOCH;
-    levelPath = "";
-    shotPath  = "";
-    levelTime = 0;
-    levelGoal = 0;
-    status    = Status.NONE;
-    time      = 0;
-    coins     = 0;
+    date          = Instant.EPOCH;
+    levelPath     = "";
+    levelShotPath = "";
+    levelTime     = 0;
+    levelGoal     = 0;
+    status        = Status.NONE;
+    time          = 0;
+    coins         = 0;
   }
   
   public ReplayInfo(Series series) {
@@ -65,14 +65,14 @@ public final class ReplayInfo {
     totalTime  = series.getTotalTime();
     totalCoins = series.getTotalCoins();
     
-    date      = series.getDate();
-    levelPath = series.getLevel().getSolidPath();
-    shotPath  = series.getLevel().getShotPath();
-    levelTime = series.getLevelTime();
-    levelGoal = series.getLevelGoal();
-    status    = series.getStatus();
-    time      = series.getTime();
-    coins     = series.getCoins();
+    date          = series.getDate();
+    levelPath     = series.getLevelPath();
+    levelShotPath = series.getLevelShotPath();
+    levelTime     = series.getLevelTime();
+    levelGoal     = series.getLevelGoal();
+    status        = series.getStatus();
+    time          = series.getTime();
+    coins         = series.getCoins();
   }
   
   public SeriesMode getMode() {
@@ -131,12 +131,12 @@ public final class ReplayInfo {
     levelPath = path;
   }
   
-  public String getShotPath() {
-    return shotPath;
+  public String getLevelShotPath() {
+    return levelShotPath;
   }
   
-  public void setShotPath(String path) {
-    shotPath = path;
+  public void setLevelShotPath(String path) {
+    levelShotPath = path;
   }
   
   public int getLevelTime() {

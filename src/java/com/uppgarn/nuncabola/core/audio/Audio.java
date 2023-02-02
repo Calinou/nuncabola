@@ -1,7 +1,7 @@
 /*
  * Audio.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -49,23 +49,23 @@ public final class Audio {
     }
   }
   
-  public static void setSoundVolume(int volume) {
+  public static void setSoundVolume(float volume) {
     if (!enabled) {
       return;
     }
     
     synchronized (sounds) {
-      sounds.setVolume(volume / 10.0f);
+      sounds.setVolume(Math.min(Math.max(volume, 0.0f), 1.0f));
     }
   }
   
-  public static void setMusicVolume(int volume) {
+  public static void setMusicVolume(float volume) {
     if (!enabled) {
       return;
     }
     
     synchronized (music) {
-      music.setVolume(volume / 10.0f);
+      music.setVolume(Math.min(Math.max(volume, 0.0f), 1.0f));
     }
   }
   
@@ -79,7 +79,7 @@ public final class Audio {
     }
     
     synchronized (sounds) {
-      sounds.play(path, amp);
+      sounds.play(path, Math.min(Math.max(amp, 0.0f), 1.0f));
     }
   }
   

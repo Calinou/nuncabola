@@ -1,7 +1,7 @@
 /*
  * Level.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@ package com.uppgarn.nuncabola.core.level;
 import java.util.*;
 
 public final class Level {
-  public static final int MAX_TIME = 59999;
-  
   public static final List<ScoreType> SCORE_TYPES =
     Collections.unmodifiableList(Arrays.asList(ScoreType.values()));
+  
+  public static final int DEFAULT_SCORE_TIME = 59999;
   
   private int     majorVersion;
   private int     minorVersion;
@@ -52,7 +52,7 @@ public final class Level {
     msg            = "";
     bonus          = false;
     
-    defaultScoreTables = new ScoreTables(SCORE_TYPES, MAX_TIME);
+    defaultScoreTables = new ScoreTables(SCORE_TYPES, DEFAULT_SCORE_TIME);
     
     solidPath = "";
   }

@@ -1,7 +1,7 @@
 /*
  * SolidWriteTool.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -126,16 +126,20 @@ public final class SolidWriteTool {
     }
   }
   
-  private static void writeBodyBase(OutputStream out, BodyBase bodyBase)
+  private static void writeBody(OutputStream out, Body body, SolidBase solBase)
       throws IOException {
-    writeInt(out, bodyBase.path0Idx);
-    writeInt(out, (bodyBase.path1Idx == bodyBase.path0Idx)
-                  ? -1 : bodyBase.path1Idx);
-    writeInt(out, bodyBase.nodeIdx);
-    writeInt(out, bodyBase.lump0Idx);
-    writeInt(out, bodyBase.lumpCount);
-    writeInt(out, bodyBase.geom0Idx);
-    writeInt(out, bodyBase.geomCount);
+    int path0Idx = (body.mover0Idx == -1)
+                   ? -1 : solBase.moverBases[body.mover0Idx].pathIdx;
+    int path1Idx = (body.mover1Idx == -1)
+                   ? -1 : solBase.moverBases[body.mover1Idx].pathIdx;
+    
+    writeInt(out, path0Idx);
+    writeInt(out, (path1Idx == path0Idx) ? -1 : path1Idx);
+    writeInt(out, body.nodeIdx);
+    writeInt(out, body.lump0Idx);
+    writeInt(out, body.lumpCount);
+    writeInt(out, body.geom0Idx);
+    writeInt(out, body.geomCount);
   }
   
   private static void writeItemBase(OutputStream out, ItemBase itemBase)
@@ -230,7 +234,7 @@ public final class SolidWriteTool {
     writeInt(out, solBase.lumps      .length);
     writeInt(out, solBase.nodes      .length);
     writeInt(out, solBase.pathBases  .length);
-    writeInt(out, solBase.bodyBases  .length);
+    writeInt(out, solBase.bodies     .length);
     writeInt(out, solBase.itemBases  .length);
     writeInt(out, solBase.goals      .length);
     writeInt(out, solBase.teles      .length);
@@ -305,10 +309,10 @@ public final class SolidWriteTool {
       writePathBase(out, pathBase);
     }
     
-    // Body bases.
+    // Bodies.
     
-    for (BodyBase bodyBase: solBase.bodyBases) {
-      writeBodyBase(out, bodyBase);
+    for (Body body: solBase.bodies) {
+      writeBody(out, body, solBase);
     }
     
     // Item bases.

@@ -1,7 +1,7 @@
 /*
  * ProgramConstants.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@ public final class ProgramConstants {
   public static final String NAME    =
     "Nuncabola";
   public static final String VERSION =
-    "0.195";
+    "0.200";
   public static final String TITLE   =
     NAME + " " + VERSION;
   

@@ -1,7 +1,7 @@
 /*
  * BinaryWriteTool.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ public final class BinaryWriteTool {
   
   public static void writeInt(OutputStream out, int value) throws IOException {
     out.write( value         & 0xFF);
-    out.write((value >>> 8)  & 0xFF);
+    out.write((value >>>  8) & 0xFF);
     out.write((value >>> 16) & 0xFF);
     out.write((value >>> 24) & 0xFF);
   }

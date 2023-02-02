@@ -1,7 +1,7 @@
 /*
  * ItemRenderer.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -47,11 +47,14 @@ final class ItemRenderer {
   private Map<ItemStyle, SolidKit> createKits() {
     Map<ItemStyle, SolidKit> kits = new EnumMap<>(ItemStyle.class);
     
-    kits.put(ItemStyle.COIN1,  createKit("coin/coin"));
-    kits.put(ItemStyle.COIN5,  createKit("coin/coin5"));
-    kits.put(ItemStyle.COIN10, createKit("coin/coin10"));
-    kits.put(ItemStyle.GROW,   createKit("grow/grow"));
-    kits.put(ItemStyle.SHRINK, createKit("shrink/shrink"));
+    kits.put(ItemStyle.COIN1,   createKit("coin/coin"));
+    kits.put(ItemStyle.COIN5,   createKit("coin/coin5"));
+    kits.put(ItemStyle.COIN10,  createKit("coin/coin10"));
+    kits.put(ItemStyle.GROW,    createKit("grow/grow"));
+    kits.put(ItemStyle.SHRINK,  createKit("shrink/shrink"));
+    kits.put(ItemStyle.CLOCK5,  createKit("clock/clock5"));
+    kits.put(ItemStyle.CLOCK15, createKit("clock/clock15"));
+    kits.put(ItemStyle.CLOCK30, createKit("clock/clock30"));
     
     return kits;
   }

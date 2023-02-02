@@ -1,7 +1,7 @@
 /*
  * HUD.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -294,60 +294,78 @@ public final class HUD {
     totalCoinsLbl.setNumber(totalCoins);
   }
   
-  private void setTimer(int timer, boolean pulse) {
-    int last = timerLbl.getTime();
-    
-    timerLbl.setTime(timer);
-    
-    if (!pulse) {
+  private void setTimer(int timer, int levelTime, boolean pulse) {
+    if ((levelTime == 0) || !pulse) {
       timerLbl.setScale(1.0f);
-    } else if (timer < last) {
-      if ((timer <= 1000) && (timer / 100 < last / 100)) {
-        timerLbl.setScale(1.50f);
+    } else {
+      int downDiff = timerLbl.getTime() - timer;
+      int upDiff   = -downDiff;
+      
+      if (downDiff > 0) {
+        int downDiff100 = timerLbl.getTime() / 100 - timer / 100;
+        int downDiff50  = timerLbl.getTime() /  50 - timer /  50;
         
-        Audio.playSound("snd/tick.ogg");
-      } else if ((timer < 500) && (timer / 50 < last / 50)) {
-        timerLbl.setScale(1.25f);
-        
-        Audio.playSound("snd/tock.ogg");
+        if ((timer <= 1000) && (downDiff100 > 0)) {
+          timerLbl.setScale(1.50f);
+          
+          Audio.playSound("snd/tick.ogg");
+        } else if ((timer < 500) && (downDiff50 > 0)) {
+          timerLbl.setScale(1.25f);
+          
+          Audio.playSound("snd/tock.ogg");
+        }
+      } else if (upDiff > 0) {
+        if (upDiff > 2950) {
+          timerLbl.setScale(2.00f);
+        } else if (upDiff > 1450) {
+          timerLbl.setScale(1.50f);
+        } else if (upDiff > 450) {
+          timerLbl.setScale(1.25f);
+        }
       }
     }
+    
+    timerLbl.setTime(timer);
   }
   
   private void setCoins(int coins, boolean pulse) {
-    int diff = coins - coinsLbl.getNumber();
-    
-    coinsLbl.setNumber(coins);
-    
     if (!pulse) {
       coinsLbl.setScale(1.0f);
-    } else if (diff > 0) {
-      if (diff >= 10) {
-        coinsLbl.setScale(2.00f);
-      } else if (diff >= 5) {
-        coinsLbl.setScale(1.50f);
-      } else {
-        coinsLbl.setScale(1.25f);
+    } else {
+      int diff = coins - coinsLbl.getNumber();
+      
+      if (diff > 0) {
+        if (diff >= 10) {
+          coinsLbl.setScale(2.00f);
+        } else if (diff >= 5) {
+          coinsLbl.setScale(1.50f);
+        } else {
+          coinsLbl.setScale(1.25f);
+        }
       }
     }
+    
+    coinsLbl.setNumber(coins);
   }
   
   private void setGoal(int goal, boolean pulse) {
-    int diff = goalLbl.getNumber() - goal;
-    
-    goalLbl.setNumber(goal);
-    
     if (!pulse) {
       goalLbl.setScale(1.0f);
-    } else if (diff > 0) {
-      if ((goal == 0) || (diff >= 10)) {
-        goalLbl.setScale(2.00f);
-      } else if (diff >= 5) {
-        goalLbl.setScale(1.50f);
-      } else  {
-        goalLbl.setScale(1.25f);
+    } else {
+      int diff = goalLbl.getNumber() - goal;
+      
+      if (diff > 0) {
+        if ((goal == 0) || (diff >= 10)) {
+          goalLbl.setScale(2.00f);
+        } else if (diff >= 5) {
+          goalLbl.setScale(1.50f);
+        } else {
+          goalLbl.setScale(1.25f);
+        }
       }
     }
+    
+    goalLbl.setNumber(goal);
   }
   
   public void setContents(Series series, boolean pulse) {
@@ -357,18 +375,18 @@ public final class HUD {
       
       setBalls     (0);
       setTotalCoins(0);
-      setTimer     (0, false);
-      setCoins     (0, false);
-      setGoal      (0, false);
+      setTimer     (0, 0, false);
+      setCoins     (0,    false);
+      setGoal      (0,    false);
     } else {
       gameGUIsVisible     = true;
       challengeGUIVisible = series.getMode() == SeriesMode.CHALLENGE;
       
       setBalls     (series.getBalls());
       setTotalCoins(series.getTotalCoins());
-      setTimer     (series.getTimer(), pulse);
-      setCoins     (series.getCoins(), pulse);
-      setGoal      (series.getGoal (), pulse);
+      setTimer     (series.getTimer(), series.getLevelTime(), pulse);
+      setCoins     (series.getCoins(),                        pulse);
+      setGoal      (series.getGoal (),                        pulse);
     }
   }
   

@@ -1,7 +1,7 @@
 /*
  * ViewDistance.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -18,6 +18,11 @@
 package com.uppgarn.nuncabola.core.game;
 
 public final class ViewDistance {
+  public static final ViewDistance DEFAULT = new ViewDistance(
+    0.75f,
+    2.00f,
+    0.25f);
+  
   /**
    * Ideal view position distance above ball.
    */

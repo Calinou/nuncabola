@@ -1,7 +1,7 @@
 /*
  * ItemBase.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@ public final class ItemBase {
   public static final int COIN   = 1;
   public static final int GROW   = 2;
   public static final int SHRINK = 3;
+  public static final int CLOCK  = 4;
   
   public static final float RADIUS = 0.15f;
   

@@ -1,7 +1,7 @@
 /*
  * Sound.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -23,30 +23,70 @@ final class Sound {
   private final String                  path;
   private final FutureHolder<AudioData> holder;
   
-  private float   volume;
+  private float volume;
+  private float amp;
+  
   private boolean paused;
   
   private ALBufferedSource source;
   private long             startTime;
   
-  private Sound next;
-  
-  public Sound(String path, FutureHolder<AudioData> holder, float volume) {
+  public Sound(
+      String                  path,
+      FutureHolder<AudioData> holder,
+      float                   volume,
+      float                   amp) {
     this.path   = path;
     this.holder = holder;
     
     this.volume = volume;
-    this.paused = false;
+    this.amp    = amp;
+    
+    paused = false;
     
     source = null;
-    
-    next = null;
     
     step();
   }
   
   public String getPath() {
     return path;
+  }
+  
+  public void setVolume(float volume) {
+    if (this.volume == volume) {
+      return;
+    }
+    
+    this.volume = volume;
+    
+    if (source != null) {
+      source.setVolume(volume * amp);
+    }
+  }
+  
+  public void restart(float amp) {
+    // Prevent a quieter sound from preempting a louder one
+    // if fewer than 100ms of the latter have been played.
+    
+    if ((amp < this.amp)
+        && ((source == null)
+          || (System.nanoTime() - startTime < 100 * 1000000L))) {
+      return;
+    }
+    
+    this.amp = amp;
+    
+    paused = false;
+    
+    if (source != null) {
+      source.rewind();
+      source.setVolume(volume * amp);
+      
+      startTime = System.nanoTime();
+      
+      source.play();
+    }
   }
   
   public void setPaused(boolean paused) {
@@ -63,30 +103,6 @@ final class Sound {
         if (!source.isStopped()) {
           source.play();
         }
-      }
-    }
-  }
-  
-  public void restart(float volume) {
-    // Prevent a quieter sound from preempting a louder one
-    // if fewer than 100ms of the latter have been played.
-    
-    if ((volume < this.volume)
-        && ((source == null)
-          || (System.nanoTime() - startTime < 100 * 1000000L))) {
-      return;
-    }
-    
-    this.volume = volume;
-    
-    if (source != null) {
-      source.rewind();
-      source.setVolume(volume);
-      
-      startTime = System.nanoTime();
-      
-      if (!paused) {
-        source.play();
       }
     }
   }
@@ -114,7 +130,7 @@ final class Sound {
       // Create source.
       
       source = new ALBufferedSource(data);
-      source.setVolume(volume);
+      source.setVolume(volume * amp);
       
       // Play.
       
@@ -126,14 +142,6 @@ final class Sound {
     }
     
     return !source.isStopped();
-  }
-  
-  public Sound getNext() {
-    return next;
-  }
-  
-  public void setNext(Sound sound) {
-    next = sound;
   }
   
   public void deinitialize() {

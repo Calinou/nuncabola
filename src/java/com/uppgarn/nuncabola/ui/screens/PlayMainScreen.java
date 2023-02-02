@@ -1,7 +1,7 @@
 /*
  * PlayMainScreen.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -73,10 +73,10 @@ public final class PlayMainScreen extends PlayActionScreen {
   private void setPosition(int x, int y) {
     final float range = Input.MAX_TILT * 2;
     
-    int mouseSense = getIntPref(Pref.MOUSE_SENSE);
+    int sensitivity = getIntPref(Pref.MOUSE_SENSITIVITY);
     
-    input.setX(input.getX() + range * y / mouseSense);
-    input.setZ(input.getZ() + range * x / mouseSense);
+    input.setX(input.getX() + range * y / sensitivity);
+    input.setZ(input.getZ() + range * x / sensitivity);
   }
   
   private void updateInputZ() {

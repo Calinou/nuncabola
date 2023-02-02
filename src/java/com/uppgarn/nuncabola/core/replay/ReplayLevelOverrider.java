@@ -1,5 +1,5 @@
 /*
- * PlayTimeOutScreen.java
+ * ReplayLevelOverrider.java
  *
  * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
@@ -15,16 +15,17 @@
  * GNU General Public License for more details.
  */
 
-package com.uppgarn.nuncabola.ui.screens;
+package com.uppgarn.nuncabola.core.replay;
 
-public final class PlayTimeOutScreen extends PlayFailureScreen {
-  public static final PlayTimeOutScreen INSTANCE = new PlayTimeOutScreen();
-  
-  private PlayTimeOutScreen() {
+import com.uppgarn.nuncabola.core.level.*;
+
+public final class ReplayLevelOverrider {
+  public static void override(LevelOverride levelOverride, ReplayInfo info) {
+    levelOverride.setShotPath(info.getLevelShotPath());
+    levelOverride.setTime    (info.getLevelTime());
+    levelOverride.setGoal    (info.getLevelGoal());
   }
   
-  @Override
-  protected String getMessage() {
-    return "Time's Up!";
+  private ReplayLevelOverrider() {
   }
 }

@@ -1,7 +1,7 @@
 /*
  * Body.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -18,7 +18,30 @@
 package com.uppgarn.nuncabola.core.solid;
 
 public final class Body {
-  public final BodyBase base;
+  /**
+   * Index of node.
+   */
+  public int nodeIdx;
+  
+  /**
+   * Index of first lump.
+   */
+  public int lump0Idx;
+  
+  /**
+   * Number of lumps.
+   */
+  public int lumpCount;
+  
+  /**
+   * Indirect index of first geom.
+   */
+  public int geom0Idx;
+  
+  /**
+   * Number of geoms.
+   */
+  public int geomCount;
   
   /**
    * Index of first (linear) mover.
@@ -30,35 +53,16 @@ public final class Body {
    */
   public int mover1Idx;
   
-  public Body(BodyBase base, MoverCreator moverCreator) {
-    this.base = base;
+  public Body() {
+    nodeIdx = -1;
     
-    if (base.path0Idx >= 0) {
-      mover0Idx = moverCreator.add(base.path0Idx);
-    } else {
-      mover0Idx = -1;
-    }
+    lump0Idx  = -1;
+    lumpCount = 0;
     
-    if (base.path1Idx == base.path0Idx) {
-      mover1Idx = mover0Idx;
-    } else if (base.path1Idx >= 0) {
-      mover1Idx = moverCreator.add(base.path1Idx);
-    } else {
-      mover1Idx = -1;
-    }
-  }
-  
-  public Body(Body src) {
-    base = src.base;
+    geom0Idx  = -1;
+    geomCount = 0;
     
-    mover0Idx = src.mover0Idx;
-    mover1Idx = src.mover1Idx;
-  }
-  
-  public void copyFrom(Body src) {
-    assert src.base == base;
-    
-    mover0Idx = src.mover0Idx;
-    mover1Idx = src.mover1Idx;
+    mover0Idx = -1;
+    mover1Idx = -1;
   }
 }

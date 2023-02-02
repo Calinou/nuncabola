@@ -1,7 +1,7 @@
 /*
  * ReplayListScreen.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -104,7 +104,7 @@ public final class ReplayListScreen extends MenuScreen {
       gui.space(c0);
       
       ImageLabel lbl = gui.imageLabel(c0, 0.2f, 0.2f);
-      lbl.setImagePath((info == null) ? null : info.getShotPath());
+      lbl.setImagePath((info == null) ? null : info.getLevelShotPath());
       
       String[] btnStrs = {"abcd-00_00"};
       
@@ -369,7 +369,7 @@ public final class ReplayListScreen extends MenuScreen {
             
             selected = idx;
             
-            if (GameFuncs.getGame().levelCompatible) {
+            if (GameFuncs.getGame().isLevelCompatible()) {
               UI.gotoScreen(ReplayIntroScreen  .INSTANCE);
             } else {
               UI.gotoScreen(ReplayWarningScreen.INSTANCE);

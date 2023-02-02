@@ -1,7 +1,7 @@
 /*
  * GameClient.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -25,60 +25,56 @@ import java.util.*;
 
 public final class GameClient {
   private final Game               game;
-  private final ViewDistance       viewDist;
   private final GameClientListener listener;
   
-  private final Level level;
-  private final Solid sol;
+  private final LevelOverride levelOverride;
+  private final Solid         sol;
   
   private Rate rate;
   private int  currBallIdx;
   
   private boolean firstUpdate;
+  private boolean levelVersionSet;
   private boolean goalsJustUnlocked;
   private boolean teleJustEntered;
   private boolean tiltAxesSet;
   private boolean viewSet;
-  private boolean levelCompatibleSet;
   
-  public GameClient(
-      Game               game,
-      ViewDistance       viewDist,
-      GameClientListener listener) {
+  public GameClient(Game game, GameClientListener listener) {
     this.game     = game;
-    this.viewDist = viewDist;
     this.listener = listener;
     
-    level = game.base.level;
-    sol   = game.sol;
+    levelOverride = game.levelOverride;
+    sol           = game.sol;
     
     rate        = Rate.DEFAULT;
     currBallIdx = 0;
     
-    firstUpdate        = true;
-    goalsJustUnlocked  = false;
-    teleJustEntered    = false;
-    tiltAxesSet        = false;
-    viewSet            = false;
-    levelCompatibleSet = false;
+    firstUpdate       = true;
+    levelVersionSet   = false;
+    goalsJustUnlocked = false;
+    teleJustEntered   = false;
+    tiltAxesSet       = false;
+    viewSet           = false;
   }
   
   public void execute(Command cmd) {
     switch (cmd.getType()) {
       case END_OF_UPDATE: {
         if (firstUpdate) {
+          if (!levelVersionSet) {
+            // For compatibility with older replays that do not include
+            // level information in the first update.
+            
+            levelOverride.setMajorVersion(1);
+            levelOverride.setMinorVersion(0);
+          }
+          
           if (!viewSet) {
             // For compatibility with older replays that do not include
             // view information in the first update.
             
-            Flyer.fly(game.view, sol, viewDist, 0.0f);
-          }
-          
-          if (!levelCompatibleSet) {
-            // For compatibility with older replays that do not include
-            // level information in the first update.
-            
-            game.levelCompatible = level.getMajorVersion() == 1;
+            Flyer.fly(game.view, sol, ViewDistance.DEFAULT, 0.0f);
           }
         } else {
           // Step goal-unlocking.
@@ -108,12 +104,12 @@ public final class GameClient {
           game.parts.step(g, rate.getTime());
         }
         
-        firstUpdate        = false;
-        goalsJustUnlocked  = false;
-        teleJustEntered    = false;
-        tiltAxesSet        = false;
-        viewSet            = false;
-        levelCompatibleSet = false;
+        firstUpdate       = false;
+        levelVersionSet   = false;
+        goalsJustUnlocked = false;
+        teleJustEntered   = false;
+        tiltAxesSet       = false;
+        viewSet           = false;
         
         break;
       }
@@ -194,10 +190,10 @@ public final class GameClient {
         // For compatibility with older replays that do not include
         // explicit mover information.
         
-        if ((myCmd.bodyIdx >= 0) && (myCmd.bodyIdx < sol.bodies.length)) {
+        if ((myCmd.bodyIdx >= 0) && (myCmd.bodyIdx < sol.base.bodies.length)) {
           // Update linear mover only.
           
-          int mover0Idx = sol.bodies[myCmd.bodyIdx].mover0Idx;
+          int mover0Idx = sol.base.bodies[myCmd.bodyIdx].mover0Idx;
           
           if ((mover0Idx >= 0)
               && (myCmd.pathIdx >= 0)
@@ -214,10 +210,10 @@ public final class GameClient {
         // For compatibility with older replays that do not include
         // explicit mover information.
         
-        if ((myCmd.bodyIdx >= 0) && (myCmd.bodyIdx < sol.bodies.length)) {
+        if ((myCmd.bodyIdx >= 0) && (myCmd.bodyIdx < sol.base.bodies.length)) {
           // Update linear mover only.
           
-          int mover0Idx = sol.bodies[myCmd.bodyIdx].mover0Idx;
+          int mover0Idx = sol.base.bodies[myCmd.bodyIdx].mover0Idx;
           
           if (mover0Idx >= 0) {
             sol.movers[mover0Idx].t = myCmd.t;
@@ -303,9 +299,10 @@ public final class GameClient {
       case LEVEL: {
         Command.Level myCmd = (Command.Level) cmd;
         
-        game.levelCompatible = level.getMajorVersion() == myCmd.majorVersion;
+        levelOverride.setMajorVersion(myCmd.majorVersion);
+        levelOverride.setMinorVersion(myCmd.minorVersion);
         
-        levelCompatibleSet = true;
+        levelVersionSet = true;
         
         break;
       }
@@ -454,7 +451,20 @@ public final class GameClient {
         Command.Timer myCmd = (Command.Timer) cmd;
         
         if (!game.status.isOver()) {
-          game.timer = (int) (myCmd.timer * 100.0f);
+          int timer = (int) (myCmd.timer * 100.0f);
+          
+          if (levelOverride.getTime() == 0) {
+            game.time = timer;
+          } else {
+            int time       = levelOverride.getTime() + game.gainedTime - timer;
+            int gainedTime = Math.round((game.time - time) / 100.0f) * 100;
+            
+            if (gainedTime <= 0) {
+              game.time = time;
+            } else {
+              game.gainedTime += gainedTime;
+            }
+          }
         }
         
         break;

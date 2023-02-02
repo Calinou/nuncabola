@@ -1,7 +1,7 @@
 /*
  * LevelParser.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -73,8 +73,7 @@ public final class LevelParser {
     
     if (str != null) {
       try {
-        level.setTime(
-          Math.min(Math.max(Integer.parseInt(str.trim()), 0), Level.MAX_TIME));
+        level.setTime(Math.max(Integer.parseInt(str.trim()), 0));
       } catch (NumberFormatException ex) {
       }
     }
@@ -166,18 +165,19 @@ public final class LevelParser {
       String[] parts = (str == null) ? new String[0] : str.trim().split("\\s+");
       
       for (int rank = 0; rank < ScoreTable.SIZE; rank++) {
-        int time  = (level.getTime() == 0) ? Level.MAX_TIME : level.getTime();
+        int time  = (level.getTime() == 0)
+                    ? Level.DEFAULT_SCORE_TIME : level.getTime();
         int coins = (!type.isGoalUnlockingRequired() && type.isTimeBased())
                     ? 0 : level.getGoal();
         
         if (rank < parts.length) {
           try {
-            int value = Integer.parseInt(parts[rank]);
+            int value = Math.max(Integer.parseInt(parts[rank]), 0);
             
             if (type.isTimeBased()) {
-              time  = Math.min(Math.max(value, 0), time);
+              time  = value;
             } else {
-              coins = Math.max(value, coins);
+              coins = value;
             }
           } catch (NumberFormatException ex) {
           }

@@ -1,7 +1,7 @@
 /*
  * Game.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@
 
 package com.uppgarn.nuncabola.core.game;
 
+import com.uppgarn.nuncabola.core.level.*;
 import com.uppgarn.nuncabola.core.math.*;
 import com.uppgarn.nuncabola.core.solid.*;
 import com.uppgarn.nuncabola.core.util.*;
@@ -24,7 +25,8 @@ import com.uppgarn.nuncabola.core.util.*;
 public final class Game {
   public final GameBase base;
   
-  public final Solid sol;
+  public final LevelOverride levelOverride;
+  public final Solid         sol;
   
   public boolean goalsUnlocked;
   public float   goalFactor;
@@ -40,15 +42,15 @@ public final class Game {
   public Particles parts;
   
   public Status status;
-  public int    timer;
+  public int    time;
+  public int    gainedTime;
   public int    coins;
-  
-  public boolean levelCompatible;
   
   public Game(GameBase base) {
     this.base = base;
     
-    sol = new Solid(base.solBase);
+    levelOverride = new LevelOverride(base.level);
+    sol           = new Solid        (base.solBase);
     
     goalsUnlocked = false;
     goalFactor    = 0.0f;
@@ -63,17 +65,17 @@ public final class Game {
     
     parts = new Particles();
     
-    status = Status.NONE;
-    timer  = 0;
-    coins  = 0;
-    
-    levelCompatible = true;
+    status     = Status.NONE;
+    time       = 0;
+    gainedTime = 0;
+    coins      = 0;
   }
   
   public Game(Game src) {
     base = src.base;
     
-    sol = new Solid(src.sol);
+    levelOverride = new LevelOverride(src.levelOverride);
+    sol           = new Solid        (src.sol);
     
     goalsUnlocked = src.goalsUnlocked;
     goalFactor    = src.goalFactor;
@@ -88,11 +90,15 @@ public final class Game {
     
     parts = new Particles(src.parts);
     
-    status = src.status;
-    timer  = src.timer;
-    coins  = src.coins;
-    
-    levelCompatible = src.levelCompatible;
+    status     = src.status;
+    time       = src.time;
+    gainedTime = src.gainedTime;
+    coins      = src.coins;
+  }
+  
+  public boolean isLevelCompatible() {
+    return levelOverride.getMajorVersion()
+      == levelOverride.getLevel().getMajorVersion();
   }
   
   private boolean isTeleportationJump(Game other) {
@@ -119,7 +125,8 @@ public final class Game {
   public void copyFrom(Game src) {
     assert src.base == base;
     
-    sol.copyFrom(src.sol);
+    levelOverride.copyFrom(src.levelOverride);
+    sol          .copyFrom(src.sol);
     
     goalsUnlocked = src.goalsUnlocked;
     goalFactor    = src.goalFactor;
@@ -134,11 +141,10 @@ public final class Game {
     
     parts.copyFrom(src.parts);
     
-    status = src.status;
-    timer  = src.timer;
-    coins  = src.coins;
-    
-    levelCompatible = src.levelCompatible;
+    status     = src.status;
+    time       = src.time;
+    gainedTime = src.gainedTime;
+    coins      = src.coins;
   }
   
   public void copyFrom(Game src0, Game src1, float alpha) {
@@ -146,6 +152,8 @@ public final class Game {
     assert src1.base == base;
     
     boolean teleJump = src0.isTeleportationJump(src1);
+    
+    levelOverride.copyFrom(src1.levelOverride);
     
     if (teleJump) {
       sol.copyFrom(src1.sol);
@@ -176,10 +184,9 @@ public final class Game {
     
     parts.copyFrom(src0.parts, src1.parts, alpha);
     
-    status = src1.status;
-    timer  = src1.timer;
-    coins  = src1.coins;
-    
-    levelCompatible = src1.levelCompatible;
+    status     = src1.status;
+    time       = src1.time;
+    gainedTime = src1.gainedTime;
+    coins      = src1.coins;
   }
 }

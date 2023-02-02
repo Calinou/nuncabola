@@ -1,7 +1,7 @@
 /*
- * OggStream.java
+ * OggReader.java
  *
- * Copyright (c) 1998-2020 Florian Priester
+ * Copyright (c) 1998-2022 Florian Priester
  *
  * CodeLibF is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -16,19 +16,18 @@
 
 package com.uppgarn.codelibf.sound;
 
-import com.uppgarn.codelibf.io.*;
-
 import com.jcraft.jogg.*;
 import com.jcraft.jorbis.*;
 
 import java.io.*;
-import java.nio.file.*;
 
-public final class OggStream implements Closeable {
+public final class OggReader implements AutoCloseable {
   private static final int BYTE_BUFFER_SIZE   = 4096;
   private static final int SAMPLE_BUFFER_SIZE = 1024;
   
-  private InputStream in;
+  private final InputStream in;
+  
+  private boolean closed;
   
   private SyncState   syncState;
   private Page        page;
@@ -50,61 +49,15 @@ public final class OggStream implements Closeable {
   private int     sampleReadOff;
   private int     sampleReadLen;
   
-  public OggStream(Path file) throws OggStreamException {
-    if (file == null) {
+  public OggReader(InputStream in) throws OggReaderException {
+    if (in == null) {
       throw new IllegalArgumentException();
     }
     
-    try {
-      // Open input stream.
-      
-      in = Files.newInputStream(file);
-      
-      try {
-        // Initialize.
-        
-        initialize();
-      } catch (OggStreamException ex) {
-        try {
-          in.close();
-        } catch (IOException ex0) {
-        }
-        
-        throw ex;
-      }
-    } catch (IOException ex) {
-      throw new OggStreamException(ex);
-    }
-  }
-  
-  public OggStream(Source src) throws OggStreamException {
-    if (src == null) {
-      throw new IllegalArgumentException();
-    }
+    this.in = in;
     
-    try {
-      // Open input stream.
-      
-      in = src.newInputStream();
-      
-      try {
-        // Initialize.
-        
-        initialize();
-      } catch (OggStreamException ex) {
-        try {
-          in.close();
-        } catch (IOException ex0) {
-        }
-        
-        throw ex;
-      }
-    } catch (SourceException ex) {
-      throw new OggStreamException(ex);
-    }
-  }
-  
-  private void initialize() throws OggStreamException {
+    closed = false;
+    
     syncState   = new SyncState();
     page        = new Page();
     streamState = new StreamState();
@@ -128,7 +81,7 @@ public final class OggStream implements Closeable {
     sampleReadLen = 0;
   }
   
-  private void readHeader() throws OggStreamException {
+  private void readHeader() throws OggReaderException {
     syncState.init();
     
     fetchPage();
@@ -136,7 +89,7 @@ public final class OggStream implements Closeable {
     streamState.init(page.serialno());
     
     if (streamState.pagein(page) == -1) {
-      throw new OggStreamException();
+      throw new OggReaderException();
     }
     
     info   .init();
@@ -144,10 +97,10 @@ public final class OggStream implements Closeable {
     
     for (int idx = 0; idx < 3; idx++) {
       if (!fetchPacket()) {
-        throw new OggStreamException();
+        throw new OggReaderException();
       }
       if (info.synthesis_headerin(comment, packet) == -1) {
-        throw new OggStreamException();
+        throw new OggReaderException();
       }
     }
     
@@ -156,27 +109,27 @@ public final class OggStream implements Closeable {
     block.init(dspState);
   }
   
-  private void fetchBytes() throws OggStreamException {
+  private void fetchBytes() throws OggReaderException {
     int off = syncState.buffer(BYTE_BUFFER_SIZE);
     
     if (off < 0) {
-      throw new OggStreamException();
+      throw new OggReaderException();
     }
     
     try {
       int read = in.read(syncState.data, off, BYTE_BUFFER_SIZE);
       
       if (read <= 0) {
-        throw new OggStreamException();
+        throw new OggReaderException();
       }
       
       syncState.wrote(read);
     } catch (IOException ex) {
-      throw new OggStreamException(ex);
+      throw new OggReaderException(ex);
     }
   }
   
-  private void fetchPage() throws OggStreamException {
+  private void fetchPage() throws OggReaderException {
     int result;
     
     while ((result = syncState.pageout(page)) == 0) {
@@ -184,11 +137,11 @@ public final class OggStream implements Closeable {
     }
     
     if (result == -1) {
-      throw new OggStreamException();
+      throw new OggReaderException();
     }
   }
   
-  private boolean fetchPacket() throws OggStreamException {
+  private boolean fetchPacket() throws OggReaderException {
     int result;
     
     while ((result = streamState.packetout(packet)) == 0) {
@@ -202,13 +155,13 @@ public final class OggStream implements Closeable {
     }
     
     if (result == -1) {
-      throw new OggStreamException();
+      throw new OggReaderException();
     }
     
     return true;
   }
   
-  private int fetchSamples() throws OggStreamException {
+  private int fetchSamples() throws OggReaderException {
     int avail;
     
     while ((avail = dspState.synthesis_pcmout(pcmBufs, pcmOffs)) == 0) {
@@ -247,7 +200,7 @@ public final class OggStream implements Closeable {
     return channels * len;
   }
   
-  private boolean fillSampleBuffer() throws OggStreamException {
+  private boolean fillSampleBuffer() throws OggReaderException {
     if (sampleReadOff == sampleReadLen) {
       int count = fetchSamples();
       
@@ -270,12 +223,13 @@ public final class OggStream implements Closeable {
     return sampleRate;
   }
   
-  public int read(short[] buf, int off, int len) throws OggStreamException {
+  public int read(short[] buf, int off, int len) throws OggReaderException {
     if ((buf == null) || (off < 0) || (len < 0) || (len > buf.length - off)) {
       throw new IllegalArgumentException();
     }
-    if (in == null) {
-      throw new OggStreamException();
+    
+    if (closed) {
+      throw new OggReaderException();
     }
     
     int count = 0;
@@ -297,24 +251,17 @@ public final class OggStream implements Closeable {
   }
   
   @Override
-  public void close() {
-    if (in == null) {
+  public void close() throws OggReaderException {
+    if (closed) {
       return;
     }
-    
-    streamState.clear();
-    block      .clear();
-    dspState   .clear();
-    info       .clear();
-    syncState  .clear();
-    
-    // Close input stream.
     
     try {
       in.close();
     } catch (IOException ex) {
+      throw new OggReaderException(ex);
     }
     
-    in = null;
+    closed = true;
   }
 }

@@ -1,7 +1,7 @@
 /*
  * CollisionDetector.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -509,7 +509,7 @@ final class CollisionDetector {
     Quaternion e_ = testBody_e_;
     Vector3    w_ = testBody_w_;
     
-    Node node = sol.base.nodes[body.base.nodeIdx];
+    Node node = sol.base.nodes[body.nodeIdx];
     
     motion.getBodyPosition   (o_, body, 0.0f);
     motion.getBodyVelocity   (w_, body, dt);
@@ -601,7 +601,7 @@ final class CollisionDetector {
     
     float t = dt;
     
-    for (Body body: sol.bodies) {
+    for (Body body: sol.base.bodies) {
       float u = testBody(u_, w_, body, ball, t);
       
       if (u < t) {

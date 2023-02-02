@@ -1,7 +1,7 @@
 /*
  * StringTool.java
  *
- * Copyright (c) 1998-2020 Florian Priester
+ * Copyright (c) 1998-2022 Florian Priester
  *
  * CodeLibF is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -17,7 +17,7 @@
 package com.uppgarn.codelibf.util;
 
 public final class StringTool {
-  public static final String LS = System.getProperty("line.separator");
+  public static final String LS = System.lineSeparator();
   
   public static String times(char ch, int count) {
     if (count < 0) {

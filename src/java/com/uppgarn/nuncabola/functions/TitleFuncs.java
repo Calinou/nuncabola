@@ -1,7 +1,7 @@
 /*
  * TitleFuncs.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -66,7 +66,7 @@ public final class TitleFuncs {
       @Override
       public void enter() {
         try {
-          GameFuncs.load("map-medium/title.sol");
+          GameFuncs.load("gui/title.sol");
           
           enabled = true;
         } catch (FuncsException ex) {
@@ -143,7 +143,7 @@ public final class TitleFuncs {
             try {
               ReplayFuncs.initialize(file, false);
               
-              if (GameFuncs.getGame().levelCompatible) {
+              if (GameFuncs.getGame().isLevelCompatible()) {
                 gotoStage(REPLAY);
               } else {
                 ReplayFuncs.deinitialize();

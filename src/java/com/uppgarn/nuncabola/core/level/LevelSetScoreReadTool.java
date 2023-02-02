@@ -1,7 +1,7 @@
 /*
  * LevelSetScoreReadTool.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -63,7 +63,7 @@ public final class LevelSetScoreReadTool {
     }
   }
   
-  private static ScoreEntry readScoreEntry(BufferedReader in, int maxTime)
+  private static ScoreEntry readScoreEntry(BufferedReader in)
       throws IOException {
     String str = in.readLine();
     
@@ -78,11 +78,8 @@ public final class LevelSetScoreReadTool {
     }
     
     try {
-      int parsedTime  = Integer.parseInt(parts[0]);
-      int parsedCoins = Integer.parseInt(parts[1]);
-      
-      int    time   = Math.min(Math.max(parsedTime, 0), maxTime);
-      int    coins  = Math.max(parsedCoins, 0);
+      int    time   = Math.max(Integer.parseInt(parts[0]), 0);
+      int    coins  = Math.max(Integer.parseInt(parts[1]), 0);
       String player = parts[2];
       
       return new ScoreEntry(new Score(time, coins), player);
@@ -91,22 +88,19 @@ public final class LevelSetScoreReadTool {
     }
   }
   
-  private static void readScoreTable(
-      ScoreTable     table,
-      BufferedReader in,
-      int            maxTime) throws IOException {
+  private static void readScoreTable(ScoreTable table, BufferedReader in)
+      throws IOException {
     for (int rank = 0; rank < ScoreTable.SIZE; rank++) {
-      table.setEntry(rank, readScoreEntry(in, maxTime));
+      table.setEntry(rank, readScoreEntry(in));
     }
   }
   
   private static void readScoreTables(
       ScoreTables    tables,
       BufferedReader in,
-      int            maxTime,
       ScoreType[]    types) throws IOException {
     for (ScoreType type: types) {
-      readScoreTable(tables.getTable(type), in, maxTime);
+      readScoreTable(tables.getTable(type), in);
     }
   }
   
@@ -130,20 +124,12 @@ public final class LevelSetScoreReadTool {
   private static void readLevelSetBlockV1(
       LevelSetScore  setScore,
       BufferedReader in) throws IOException {
-    readScoreTables(
-      setScore.getTables(),
-      in,
-      LevelSet.MAX_TIME,
-      LEVEL_SET_SCORE_TYPES);
+    readScoreTables(setScore.getTables(), in, LEVEL_SET_SCORE_TYPES);
   }
   
   private static void readLevelBlockV1(LevelScore levelScore, BufferedReader in)
       throws IOException {
-    readScoreTables(
-      levelScore.getTables(),
-      in,
-      Level.MAX_TIME,
-      LEVEL_SCORE_TYPES);
+    readScoreTables(levelScore.getTables(), in, LEVEL_SCORE_TYPES);
   }
   
   private static void readLevelSetScoreV1(
@@ -167,11 +153,7 @@ public final class LevelSetScoreReadTool {
   private static void readLevelSetBlockV2(
       ScoreTables    setScoreTables,
       BufferedReader in) throws IOException {
-    readScoreTables(
-      setScoreTables,
-      in,
-      LevelSet.MAX_TIME,
-      LEVEL_SET_SCORE_TYPES);
+    readScoreTables(setScoreTables, in, LEVEL_SET_SCORE_TYPES);
   }
   
   private static boolean readLevelBlockV2(
@@ -219,11 +201,7 @@ public final class LevelSetScoreReadTool {
         levelScore.setStatus(status);
       }
       
-      readScoreTables(
-        levelScore.getTables(),
-        in,
-        Level.MAX_TIME,
-        LEVEL_SCORE_TYPES);
+      readScoreTables(levelScore.getTables(), in, LEVEL_SCORE_TYPES);
       
       return true;
     } catch (NumberFormatException ex) {

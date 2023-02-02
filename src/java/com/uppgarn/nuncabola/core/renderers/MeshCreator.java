@@ -1,7 +1,7 @@
 /*
  * MeshCreator.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -48,20 +48,20 @@ final class MeshCreator {
     indices = new int[offsetCount];
   }
   
-  private int getGeomCount(BodyBase bodyBase) {
+  private int getGeomCount(Body body) {
     int count = 0;
     
     // Lump geoms.
     
-    for (int idx = 0; idx < bodyBase.lumpCount; idx++) {
-      Lump lump = solBase.lumps[bodyBase.lump0Idx + idx];
+    for (int idx = 0; idx < body.lumpCount; idx++) {
+      Lump lump = solBase.lumps[body.lump0Idx + idx];
       
       count += lump.geomCount;
     }
     
     // Body geoms.
     
-    count += bodyBase.geomCount;
+    count += body.geomCount;
     
     return count;
   }
@@ -69,8 +69,8 @@ final class MeshCreator {
   private int getMaximumGeomCount() {
     int count = 0;
     
-    for (BodyBase bodyBase: solBase.bodyBases) {
-      count = Math.max(count, getGeomCount(bodyBase));
+    for (Body body: solBase.bodies) {
+      count = Math.max(count, getGeomCount(body));
     }
     
     return count;
@@ -88,11 +88,11 @@ final class MeshCreator {
     return false;
   }
   
-  private boolean isMaterialUsed(BodyBase bodyBase, int mtrlIdx) {
+  private boolean isMaterialUsed(Body body, int mtrlIdx) {
     // Lump geoms.
     
-    for (int idx = 0; idx < bodyBase.lumpCount; idx++) {
-      Lump lump = solBase.lumps[bodyBase.lump0Idx + idx];
+    for (int idx = 0; idx < body.lumpCount; idx++) {
+      Lump lump = solBase.lumps[body.lump0Idx + idx];
       
       if (isMaterialUsed(lump.geom0Idx, lump.geomCount, mtrlIdx)) {
         return true;
@@ -101,14 +101,14 @@ final class MeshCreator {
     
     // Body geoms.
     
-    return isMaterialUsed(bodyBase.geom0Idx, bodyBase.geomCount, mtrlIdx);
+    return isMaterialUsed(body.geom0Idx, body.geomCount, mtrlIdx);
   }
   
-  private int getMaterialCount(BodyBase bodyBase) {
+  private int getMaterialCount(Body body) {
     int count = 0;
     
     for (int mtrlIdx = 0; mtrlIdx < solBase.mtrls.length; mtrlIdx++) {
-      if (isMaterialUsed(bodyBase, mtrlIdx)) {
+      if (isMaterialUsed(body, mtrlIdx)) {
         count++;
       }
     }
@@ -169,27 +169,27 @@ final class MeshCreator {
     }
   }
   
-  private void fillBuffers(BodyBase bodyBase, int mtrlIdx) {
+  private void fillBuffers(Body body, int mtrlIdx) {
     // Lump geoms.
     
-    for (int idx = 0; idx < bodyBase.lumpCount; idx++) {
-      Lump lump = solBase.lumps[bodyBase.lump0Idx + idx];
+    for (int idx = 0; idx < body.lumpCount; idx++) {
+      Lump lump = solBase.lumps[body.lump0Idx + idx];
       
       fillBuffers(lump.geom0Idx, lump.geomCount, mtrlIdx);
     }
     
     // Body geoms.
     
-    fillBuffers(bodyBase.geom0Idx, bodyBase.geomCount, mtrlIdx);
+    fillBuffers(body.geom0Idx, body.geomCount, mtrlIdx);
   }
   
-  private Mesh createMesh(BodyBase bodyBase, int mtrlIdx) {
+  private Mesh createMesh(Body body, int mtrlIdx) {
     vboBuf.clear();
     eboBuf.clear();
     
     Arrays.fill(indices, -1);
     
-    fillBuffers(bodyBase, mtrlIdx);
+    fillBuffers(body, mtrlIdx);
     
     vboBuf.flip();
     eboBuf.flip();
@@ -197,14 +197,14 @@ final class MeshCreator {
     return new Mesh(assets[mtrlIdx], vboBuf, eboBuf);
   }
   
-  private Mesh[] createMeshes(BodyBase bodyBase) {
-    Mesh[] meshes = new Mesh[getMaterialCount(bodyBase)];
+  private Mesh[] createMeshes(Body body) {
+    Mesh[] meshes = new Mesh[getMaterialCount(body)];
     
     for (int mtrlIdx = 0, meshIdx = 0;
         mtrlIdx < solBase.mtrls.length;
         mtrlIdx++) {
-      if (isMaterialUsed(bodyBase, mtrlIdx)) {
-        meshes[meshIdx++] = createMesh(bodyBase, mtrlIdx);
+      if (isMaterialUsed(body, mtrlIdx)) {
+        meshes[meshIdx++] = createMesh(body, mtrlIdx);
       }
     }
     
@@ -212,10 +212,10 @@ final class MeshCreator {
   }
   
   private Mesh[][] createMeshArrays() {
-    Mesh[][] meshArrays = new Mesh[solBase.bodyBases.length][];
+    Mesh[][] meshArrays = new Mesh[solBase.bodies.length][];
     
-    for (int idx = 0; idx < solBase.bodyBases.length; idx++) {
-      meshArrays[idx] = createMeshes(solBase.bodyBases[idx]);
+    for (int idx = 0; idx < solBase.bodies.length; idx++) {
+      meshArrays[idx] = createMeshes(solBase.bodies[idx]);
     }
     
     return meshArrays;

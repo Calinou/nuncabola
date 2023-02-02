@@ -1,7 +1,7 @@
 /*
  * Sounds.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -19,31 +19,41 @@ package com.uppgarn.nuncabola.core.audio;
 
 import com.uppgarn.nuncabola.core.folder.*;
 
+import java.util.*;
+
 final class Sounds {
   private AudioDataManager mgr;
   
   private float volume;
-  private Sound first;
+  
+  private List<Sound> sounds;
   
   public Sounds(Folder dataFolder, int cacheSize) {
     mgr = AudioDataManager.create(dataFolder, cacheSize);
     
     volume = 1.0f;
-    first  = null;
+    
+    sounds = new ArrayList<>();
   }
   
   public void setVolume(float volume) {
     this.volume = volume;
+    
+    for (int idx = 0; idx < sounds.size(); idx++) {
+      Sound sound = sounds.get(idx);
+      
+      sound.setVolume(volume);
+    }
   }
   
   public void play(String path, float amp) {
-    float soundVolume = Math.min(Math.max(amp, 0.0f), 1.0f) * volume;
-    
     // If the requested sound is already playing, restart it.
     
-    for (Sound sound = first; sound != null; sound = sound.getNext()) {
+    for (int idx = 0; idx < sounds.size(); idx++) {
+      Sound sound = sounds.get(idx);
+      
       if (sound.getPath().equals(path)) {
-        sound.restart(soundVolume);
+        sound.restart(amp);
         
         return;
       }
@@ -51,45 +61,38 @@ final class Sounds {
     
     // Otherwise, create a new sound.
     
-    Sound sound = new Sound(path, mgr.get(path), soundVolume);
-    sound.setNext(first);
-    
-    first = sound;
+    sounds.add(new Sound(path, mgr.get(path), volume, amp));
   }
   
   public void setPaused(boolean paused) {
-    for (Sound sound = first; sound != null; sound = sound.getNext()) {
+    for (int idx = 0; idx < sounds.size(); idx++) {
+      Sound sound = sounds.get(idx);
+      
       sound.setPaused(paused);
     }
   }
   
   public void stop() {
-    for (Sound sound = first; sound != null; sound = sound.getNext()) {
+    for (int idx = 0; idx < sounds.size(); idx++) {
+      Sound sound = sounds.get(idx);
+      
       sound.deinitialize();
     }
     
-    first = null;
+    sounds.clear();
   }
   
   public void step() {
-    for (Sound sound = first, prev = null; sound != null;) {
-      Sound next = sound.getNext();
+    for (int idx = sounds.size() - 1; idx >= 0; idx--) {
+      Sound sound = sounds.get(idx);
       
       if (!sound.step()) {
         // The sound has finished, delete it.
         
         sound.deinitialize();
         
-        if (prev != null) {
-          prev.setNext(next);
-        } else {
-          first = next;
-        }
-      } else {
-        prev = sound;
+        sounds.remove(idx);
       }
-      
-      sound = next;
     }
   }
   

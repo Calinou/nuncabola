@@ -1,7 +1,7 @@
 /*
  * ReplayInfoWriteTool.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@ public final class ReplayInfoWriteTool {
     
     writeString(out, DATE_FORMATTER.format(info.getDate()));
     
-    writeString(out, info.getShotPath());
+    writeString(out, info.getLevelShotPath());
     writeString(out, info.getLevelPath());
     
     writeInt(out, info.getLevelTime());

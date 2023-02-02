@@ -1,7 +1,7 @@
 /*
  * SolidReadTool.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@ import com.uppgarn.codelibf.io.*;
 import java.io.*;
 import java.nio.charset.*;
 import java.nio.file.*;
+import java.util.*;
 
 public final class SolidReadTool {
   private static String getString(byte[] bytes, int off) throws IOException {
@@ -259,27 +260,27 @@ public final class SolidReadTool {
     return pathBase;
   }
   
-  private static BodyBase readBodyBase(InputStream in, int version)
-      throws IOException {
-    BodyBase bodyBase = new BodyBase();
+  private static Body readBody(
+      InputStream      in,
+      int              version,
+      MoverBaseCreator moverBaseCreator) throws IOException {
+    Body body = new Body();
     
-    bodyBase.path0Idx = readInt(in);
+    int path0Idx = readInt(in);
+    int path1Idx = (version >= VERSION_1_6) ? readInt(in) : -1;
     
-    if (version >= VERSION_1_6) {
-      int path1Idx = readInt(in);
-      
-      bodyBase.path1Idx = (path1Idx >= 0) ? path1Idx : bodyBase.path0Idx;
-    } else {
-      bodyBase.path1Idx = bodyBase.path0Idx;
-    }
+    body.mover0Idx = (path0Idx >= 0)
+                     ? moverBaseCreator.add(path0Idx) : -1;
+    body.mover1Idx = ((path1Idx >= 0) && (path1Idx != path0Idx))
+                     ? moverBaseCreator.add(path1Idx) : body.mover0Idx;
     
-    bodyBase.nodeIdx   = readInt(in);
-    bodyBase.lump0Idx  = readInt(in);
-    bodyBase.lumpCount = readInt(in);
-    bodyBase.geom0Idx  = readInt(in);
-    bodyBase.geomCount = readInt(in);
+    body.nodeIdx   = readInt(in);
+    body.lump0Idx  = readInt(in);
+    body.lumpCount = readInt(in);
+    body.geom0Idx  = readInt(in);
+    body.geomCount = readInt(in);
     
-    return bodyBase;
+    return body;
   }
   
   private static ItemBase readItemBase(InputStream in) throws IOException {
@@ -481,16 +482,18 @@ public final class SolidReadTool {
     solBase.geoms   = new Geom      [geomCount];
     solBase.lumps   = new Lump      [lumpCount];
     solBase.nodes   = new Node      [nodeCount];
+    solBase.bodies  = new Body      [bodyCount];
     solBase.goals   = new Goal      [goalCount];
     solBase.teles   = new Teleporter[teleCount];
     solBase.bills   = new Billboard [billCount];
     solBase.vistas  = new Vista     [vistaCount];
     
     solBase.pathBases   = new PathBase  [pathCount];
-    solBase.bodyBases   = new BodyBase  [bodyCount];
     solBase.switchBases = new SwitchBase[switchCount];
     solBase.itemBases   = new ItemBase  [itemCount];
     solBase.ballBases   = new BallBase  [ballCount];
+    
+    MoverBaseCreator moverBaseCreator = new MoverBaseCreator();
     
     // Materials.
     
@@ -556,11 +559,15 @@ public final class SolidReadTool {
       solBase.pathBases[idx] = readPathBase(in, version);
     }
     
-    // Body bases.
+    // Bodies.
     
     for (int idx = 0; idx < bodyCount; idx++) {
-      solBase.bodyBases[idx] = readBodyBase(in, version);
+      solBase.bodies[idx] = readBody(in, version, moverBaseCreator);
     }
+    
+    // Mover bases.
+    
+    solBase.moverBases = moverBaseCreator.create();
     
     // Item bases.
     
@@ -650,5 +657,26 @@ public final class SolidReadTool {
   }
   
   private SolidReadTool() {
+  }
+  
+  private static final class MoverBaseCreator {
+    private List<MoverBase> moverBases;
+    
+    public MoverBaseCreator() {
+      moverBases = new ArrayList<>();
+    }
+    
+    public int add(int pathIdx) {
+      MoverBase moverBase = new MoverBase();
+      moverBase.pathIdx = pathIdx;
+      
+      moverBases.add(moverBase);
+      
+      return moverBases.size() - 1;
+    }
+    
+    public MoverBase[] create() {
+      return moverBases.toArray(new MoverBase[moverBases.size()]);
+    }
   }
 }

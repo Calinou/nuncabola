@@ -1,7 +1,7 @@
 /*
  * Pref.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -45,6 +45,7 @@ public enum Pref {
   CONTROLLER_CAMERA_2     (6),
   CONTROLLER_CAMERA_3     (7),
   CONTROLLER_CAMERA_TOGGLE(8),
+  FOV                     (50),
   FPS                     (false),
   FULLSCREEN              (false),
   GC_EXPLICIT             (false),
@@ -65,7 +66,7 @@ public enum Pref {
   LOCK_GOALS              (true),
   MIPMAP                  (true),
   MOUSE_INVERT            (false),
-  MOUSE_SENSE             (300),
+  MOUSE_SENSITIVITY       (300),
   MOUSE_ROTATE_L          (MouseButton.get("Left")),
   MOUSE_ROTATE_R          (MouseButton.get("Right")),
   MOUSE_CAMERA_1          (MouseButton.get("None")),
@@ -91,7 +92,6 @@ public enum Pref {
   VIEW_DISTANCE_PY        (75),
   VIEW_DISTANCE_PZ        (200),
   VIEW_DISTANCE_CY        (25),
-  VIEW_FOV                (50),
   VOLUME_SOUND            (10),
   VOLUME_MUSIC            (6),
   V_SYNC                  (true),

@@ -1,7 +1,7 @@
 /*
  * PrefsIOTool.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ final class PrefsIOTool {
     map.put("background",             Pref.BACKGROUND);
     map.put("shadow",                 Pref.SHADOW);
     map.put("audio_buff",             Pref.AUDIO_BUFFER);
-    map.put("mouse_sense",            Pref.MOUSE_SENSE);
+    map.put("mouse_sense",            Pref.MOUSE_SENSITIVITY);
     map.put("mouse_response",         Pref.RESPONSE_MOUSE);
     map.put("mouse_invert",           Pref.MOUSE_INVERT);
     map.put("vsync",                  Pref.V_SYNC);
@@ -88,7 +88,7 @@ final class PrefsIOTool {
     map.put("key_restart",            Pref.KEY_RESTART);
     map.put("key_score_next",         Pref.KEY_SCORE_TYPE_CYCLE);
     map.put("key_rotate_fast",        Pref.KEY_ROTATE_FAST);
-    map.put("view_fov",               Pref.VIEW_FOV);
+    map.put("view_fov",               Pref.FOV);
     map.put("view_dp",                Pref.VIEW_DISTANCE_PY);
     map.put("view_dc",                Pref.VIEW_DISTANCE_CY);
     map.put("view_dz",                Pref.VIEW_DISTANCE_PZ);

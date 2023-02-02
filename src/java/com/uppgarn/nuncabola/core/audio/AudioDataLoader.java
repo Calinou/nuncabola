@@ -1,7 +1,7 @@
 /*
  * AudioDataLoader.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -30,8 +30,8 @@ import java.util.*;
 final class AudioDataLoader {
   private static final int MAX_SIZE = 524288;
   
-  private static ShortBuffer createBuffer(OggStream in)
-      throws OggStreamException {
+  private static ShortBuffer createBuffer(OggReader in)
+      throws OggReaderException {
     short[] array = new short[2048];
     int     len   = 0;
     
@@ -46,7 +46,7 @@ final class AudioDataLoader {
     return BufferUtils.createShortBuffer(len).put(array, 0, len);
   }
   
-  private static AudioData load(OggStream in) throws OggStreamException {
+  private static AudioData load(OggReader in) throws OggReaderException {
     int channels   = in.getChannels();
     int sampleRate = in.getSampleRate();
     
@@ -63,9 +63,9 @@ final class AudioDataLoader {
   }
   
   public static AudioData load(Source src) {
-    try (OggStream in = new OggStream(src)) {
+    try (OggReader in = new OggReader(src.newInputStream())) {
       return load(in);
-    } catch (OggStreamException ex) {
+    } catch (SourceException | OggReaderException ex) {
       return null;
     }
   }

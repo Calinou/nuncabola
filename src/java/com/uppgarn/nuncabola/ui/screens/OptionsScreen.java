@@ -1,7 +1,7 @@
 /*
  * OptionsScreen.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ import com.uppgarn.codelibf.util.*;
 public final class OptionsScreen extends MenuScreen {
   public static final OptionsScreen INSTANCE = new OptionsScreen();
   
-  private Slider mouseSenseSld;
+  private Slider mouseSensitivitySld;
   private Slider soundVolSld;
   private Slider musicVolSld;
   
@@ -88,8 +88,14 @@ public final class OptionsScreen extends MenuScreen {
         TextLabel lbl = gui.textLabel(c1);
         lbl.setText("Mouse Sensitivity");
         
-        mouseSenseSld = new Slider(gui, c1, 600, -50, 11, Action.MOUSE_SENSE);
-        mouseSenseSld.setValue(getIntPref(Pref.MOUSE_SENSE));
+        mouseSensitivitySld = new Slider(
+          gui,
+          c1,
+          600,
+          -50,
+          11,
+          Action.MOUSE_SENSITIVITY);
+        mouseSensitivitySld.setValue(getIntPref(Pref.MOUSE_SENSITIVITY));
       }
       
       gui.space(c0);
@@ -163,12 +169,12 @@ public final class OptionsScreen extends MenuScreen {
         
         break;
       }
-      case MOUSE_SENSE: {
-        int mouseSense = (Integer) token1;
+      case MOUSE_SENSITIVITY: {
+        int sensitivity = (Integer) token1;
         
-        setPref(Pref.MOUSE_SENSE, mouseSense);
+        setPref(Pref.MOUSE_SENSITIVITY, sensitivity);
         
-        mouseSenseSld.setValue(mouseSense);
+        mouseSensitivitySld.setValue(sensitivity);
         
         break;
       }
@@ -177,7 +183,7 @@ public final class OptionsScreen extends MenuScreen {
         
         setPref(Pref.VOLUME_SOUND, volume);
         
-        Audio.setSoundVolume(volume);
+        Audio.setSoundVolume(volume / 10.0f);
         Audio.playSound("snd/bump.ogg");
         
         soundVolSld.setValue(volume);
@@ -189,7 +195,7 @@ public final class OptionsScreen extends MenuScreen {
         
         setPref(Pref.VOLUME_MUSIC, volume);
         
-        Audio.setMusicVolume(volume);
+        Audio.setMusicVolume(volume / 10.0f);
         Audio.playSound("snd/bump.ogg");
         
         musicVolSld.setValue(volume);
@@ -229,15 +235,15 @@ public final class OptionsScreen extends MenuScreen {
     
     BackgroundFuncs.deinitialize();
     
-    mouseSenseSld = null;
-    soundVolSld   = null;
-    musicVolSld   = null;
+    mouseSensitivitySld = null;
+    soundVolSld         = null;
+    musicVolSld         = null;
   }
   
   private enum Action {
     BACK,
     GRAPHICS,
-    MOUSE_SENSE,
+    MOUSE_SENSITIVITY,
     VOLUME_SOUND,
     VOLUME_MUSIC,
     PLAYER,

@@ -1,7 +1,7 @@
 /*
  * ReplaySeries.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -17,14 +17,12 @@
 
 package com.uppgarn.nuncabola.core.replay;
 
-import com.uppgarn.nuncabola.core.level.*;
 import com.uppgarn.nuncabola.core.series.*;
 
 public final class ReplaySeries extends Series {
   private final ReplayInfo info;
-  private final Level      level;
   
-  public ReplaySeries(ReplayInfo info, Level level) {
+  public ReplaySeries(ReplayInfo info) {
     super(
       info.getMode(),
       info.getPlayer(),
@@ -32,19 +30,13 @@ public final class ReplaySeries extends Series {
       info.getTotalTime(),
       info.getTotalCoins());
     
-    this.info  = info;
-    this.level = level;
+    this.info = info;
     
     playLevel();
   }
   
   private void playLevel() {
-    play(
-      false,
-      info.getDate(),
-      level,
-      info.getLevelTime(),
-      info.getLevelGoal());
+    play(false, info.getDate(), info.getLevelPath());
   }
   
   public void repeat() {

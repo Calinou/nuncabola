@@ -1,7 +1,7 @@
 /*
  * PlaySeries.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -72,12 +72,7 @@ public final class PlaySeries extends Series {
                        == LevelStatus.COMPLETED);
     scoreResults = null;
     
-    Instant date      = Instant.now();
-    Level   level     = levels.get(levelIdx);
-    int     levelTime = level.getTime();
-    int     levelGoal = level.getGoal();
-    
-    play(applyResult, date, level, levelTime, levelGoal);
+    play(applyResult, Instant.now(), set.getLevelPaths().get(levelIdx));
   }
   
   @Override

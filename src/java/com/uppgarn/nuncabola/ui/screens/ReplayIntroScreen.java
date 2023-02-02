@@ -1,7 +1,7 @@
 /*
  * ReplayIntroScreen.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -20,13 +20,10 @@ package com.uppgarn.nuncabola.ui.screens;
 import com.uppgarn.nuncabola.core.audio.*;
 import com.uppgarn.nuncabola.core.gui.*;
 import com.uppgarn.nuncabola.functions.*;
-import com.uppgarn.nuncabola.preferences.*;
 import com.uppgarn.nuncabola.ui.*;
 import com.uppgarn.nuncabola.ui.hud.*;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
-
-import org.lwjgl.input.*;
 
 public final class ReplayIntroScreen extends ReplayActionScreen {
   public static final ReplayIntroScreen INSTANCE = new ReplayIntroScreen();
@@ -60,10 +57,6 @@ public final class ReplayIntroScreen extends ReplayActionScreen {
     gc();
   }
   
-  private void goToReplayMainScreen() {
-    UI.gotoScreen(ReplayMainScreen.INSTANCE);
-  }
-  
   @Override
   protected void configureGUI(GUI gui) {
     TextLabel lbl = gui.textLabel(null, Font.LARGE);
@@ -75,7 +68,7 @@ public final class ReplayIntroScreen extends ReplayActionScreen {
   @Override
   public void timer(float dt) {
     if (UI.getScreenTime() >= 1.0f) {
-      goToReplayMainScreen();
+      UI.gotoScreen(ReplayMainScreen.INSTANCE);
       
       return;
     }
@@ -85,29 +78,6 @@ public final class ReplayIntroScreen extends ReplayActionScreen {
     }
     
     super.timer(dt);
-  }
-  
-  @Override
-  public void keyDown(int code, char ch) {
-    if (code == Keyboard.KEY_RETURN) {
-      goToReplayMainScreen();
-    } else {
-      super.keyDown(code, ch);
-    }
-  }
-  
-  @Override
-  public void mouseDown(int button) {
-    if (button == 0) {
-      goToReplayMainScreen();
-    }
-  }
-  
-  @Override
-  public void controllerDown(int button) {
-    if (button == getIntPref(Pref.CONTROLLER_BUTTON_A)) {
-      goToReplayMainScreen();
-    }
   }
   
   @Override

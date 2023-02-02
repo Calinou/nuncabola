@@ -1,7 +1,7 @@
 /*
  * PrefsReadTool.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@ public final class PrefsReadTool {
         case CONTROLLER_CAMERA_TOGGLE: {
           return Math.max(value, 0);
         }
-        case MOUSE_SENSE: {
+        case MOUSE_SENSITIVITY: {
           return Math.max(value, 1);
         }
         case MULTISAMPLE: {

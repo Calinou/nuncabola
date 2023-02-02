@@ -1,7 +1,7 @@
 /*
  * UI.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -340,7 +340,7 @@ public final class UI {
       DataFuncs.getDataFolder(),
       getBooleanPref(Pref.BACKGROUND),
       getBooleanPref(Pref.SHADOW),
-      getIntPref    (Pref.VIEW_FOV),
+      getIntPref    (Pref.FOV),
       getStringPref (Pref.BALL_PATH));
   }
   
@@ -351,8 +351,8 @@ public final class UI {
   private static void initializeAudio() {
     Audio.initialize(DataFuncs.getDataFolder(), getIntPref(Pref.AUDIO_BUFFER));
     
-    Audio.setSoundVolume(getIntPref(Pref.VOLUME_SOUND));
-    Audio.setMusicVolume(getIntPref(Pref.VOLUME_MUSIC));
+    Audio.setSoundVolume(getIntPref(Pref.VOLUME_SOUND) / 10.0f);
+    Audio.setMusicVolume(getIntPref(Pref.VOLUME_MUSIC) / 10.0f);
   }
   
   private static void initializeFPSCounter() {
@@ -384,7 +384,7 @@ public final class UI {
         try {
           ReplayFuncs.initialize(myMode.getFile());
           
-          if (GameFuncs.getGame().levelCompatible) {
+          if (GameFuncs.getGame().isLevelCompatible()) {
             gotoScreen(ReplayIntroScreen  .INSTANCE);
           } else {
             gotoScreen(ReplayWarningScreen.INSTANCE);

@@ -1,7 +1,7 @@
 /*
  * ItemStyle.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -24,7 +24,10 @@ public enum ItemStyle {
   COIN5,
   COIN10,
   GROW,
-  SHRINK;
+  SHRINK,
+  CLOCK5,
+  CLOCK15,
+  CLOCK30;
   
   public static ItemStyle getStyle(Item item) {
     switch (item.type) {
@@ -42,6 +45,15 @@ public enum ItemStyle {
       }
       case ItemBase.SHRINK: {
         return SHRINK;
+      }
+      case ItemBase.CLOCK: {
+        if (item.value >= 30) {
+          return CLOCK30;
+        } else if (item.value >= 15) {
+          return CLOCK15;
+        } else {
+          return CLOCK5;
+        }
       }
       
       default: {

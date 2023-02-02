@@ -1,7 +1,7 @@
 /*
  * SolidRenderer.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -181,7 +181,7 @@ final class SolidRenderer {
       return;
     }
     
-    Body body = sol.bodies[bodyIdx];
+    Body body = sol.base.bodies[bodyIdx];
     
     glPushMatrix();
     {
@@ -195,7 +195,7 @@ final class SolidRenderer {
   }
   
   private void drawBodies(State state, PassInfo passInfo) {
-    for (int bodyIdx = 0; bodyIdx < sol.bodies.length; bodyIdx++) {
+    for (int bodyIdx = 0; bodyIdx < sol.base.bodies.length; bodyIdx++) {
       drawBody(state, bodyIdx, passInfo);
     }
   }

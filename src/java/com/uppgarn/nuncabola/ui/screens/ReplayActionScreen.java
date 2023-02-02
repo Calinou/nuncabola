@@ -1,7 +1,7 @@
 /*
  * ReplayActionScreen.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -45,6 +45,10 @@ public abstract class ReplayActionScreen extends GUIScreen {
     hud        .setSpeed(speed);
   }
   
+  private void goToReplayPauseScreen() {
+    UI.gotoScreen(ReplayPauseScreen.INSTANCE);
+  }
+  
   @Override
   public final void paint(float t) {
     GameFuncs.draw(t);
@@ -67,10 +71,22 @@ public abstract class ReplayActionScreen extends GUIScreen {
       changeSpeed(+1);
     } else if (isKey(code, ch, Pref.KEY_BACKWARD)) {
       changeSpeed(-1);
-    } else if (isKey(code, ch, Pref.KEY_PAUSE)) {
-      UI.gotoScreen(ReplayPauseScreen.INSTANCE);
+    } else if (isKey(code, ch, Pref.KEY_PAUSE)
+        || (code == Keyboard.KEY_RETURN)) {
+      goToReplayPauseScreen();
+    } else if (code == Keyboard.KEY_F5) {
+      if (getBooleanPref(Pref.CHEAT)) {
+        UI.gotoScreen(ReplayLookScreen.INSTANCE);
+      }
     } else if (code == Keyboard.KEY_F10) {
       hud.toggleVisible();
+    }
+  }
+  
+  @Override
+  public void mouseDown(int button) {
+    if (button == 0) {
+      goToReplayPauseScreen();
     }
   }
   
@@ -95,9 +111,16 @@ public abstract class ReplayActionScreen extends GUIScreen {
   }
   
   @Override
+  public void controllerDown(int button) {
+    if (button == getIntPref(Pref.CONTROLLER_BUTTON_A)) {
+      goToReplayPauseScreen();
+    }
+  }
+  
+  @Override
   public final void exitRequested() {
     if (isKey(Keyboard.KEY_ESCAPE, (char) 0, Pref.KEY_PAUSE)) {
-      UI.gotoScreen(ReplayPauseScreen.INSTANCE);
+      goToReplayPauseScreen();
     } else {
       Audio.stopSounds();
       

@@ -1,7 +1,7 @@
 /*
  * Music.java
  *
- * Copyright (c) 2003-2020 Nuncabola authors
+ * Copyright (c) 2003-2022 Nuncabola authors
  * See authors.txt for details.
  *
  * Nuncabola is free software; you can redistribute it and/or modify
@@ -26,9 +26,11 @@ import java.nio.*;
 final class Music {
   private final Folder dataFolder;
   
-  private float   volume;
-  private Track   current;
-  private Track   queue;
+  private float volume;
+  
+  private Track current;
+  private Track queue;
+  
   private boolean paused;
   
   private ALStreamedSource source;
@@ -36,10 +38,12 @@ final class Music {
   public Music(Folder dataFolder, int bufferSize) {
     this.dataFolder = dataFolder;
     
-    volume  = 1.0f;
+    volume = 1.0f;
+    
     current = null;
     queue   = null;
-    paused  = false;
+    
+    paused = false;
     
     // Create source.
     
@@ -48,6 +52,10 @@ final class Music {
   }
   
   public void setVolume(float volume) {
+    if (this.volume == volume) {
+      return;
+    }
+    
     this.volume = volume;
     
     source.setVolume(volume);
